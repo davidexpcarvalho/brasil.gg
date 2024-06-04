@@ -1,12 +1,14 @@
+import os
 import requests
 import pandas as pd
 import time
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+import logging
 
 # Configuração do banco de dados
-DATABASE_URL = 'sqlite:///players.db'
+DATABASE_URL = 'postgresql://postgres.ogwhaifbcpmhvavyeujd:mj4y,#3%EGP%7SZ@aws-0-sa-east-1.pooler.supabase.com:6543/postgres'
 engine = create_engine(DATABASE_URL)
 Base = declarative_base()
 Session = sessionmaker(bind=engine)
@@ -30,7 +32,7 @@ def get_puuid(game_name, tag_line, api_key):
     if response.status_code == 200:
         return response.json()['puuid']
     else:
-        print(f"Erro ao obter PUUID para {game_name}#{tag_line}: {response.status_code}")
+        logging.error(f"Erro ao obter PUUID para {game_name}#{tag_line}: {response.status_code}")
         return None
 
 def get_champion_translation():
@@ -56,7 +58,7 @@ def get_existing_match_ids():
 
 # Processar jogadores
 players = session.query(Player).all()
-api_key = "RGAPI-5704b123-5507-4266-a9b2-076fecc49df0"
+api_key = os.getenv('RIOT_API_KEY', 'RGAPI-5704b123-5507-4266-a9b2-076fecc49df0')
 
 champion_translation = get_champion_translation()
 
@@ -65,7 +67,7 @@ for player in players:
     game_name = player.nick
     tag_line = player.tag_line
     team_name = player.team_name
-    print(f"Processando jogador {player_name} ({game_name}) do time {team_name}")
+    logging.info(f"Processando jogador {player_name} ({game_name}) do time {team_name}")
 
     puuid = player.puuid
     if not puuid:
@@ -77,11 +79,11 @@ for player in players:
         puuid = player.puuid
 
     if not puuid:
-        print(f"PUUID não encontrado para o jogador {player_name}, pulando.")
+        logging.warning(f"PUUID não encontrado para o jogador {player_name}, pulando.")
         continue
 
     existing_match_ids = get_existing_match_ids()
     match_details = get_match_details(puuid, player_name, api_key, existing_match_ids, champion_translation)
     save_progress_to_db(match_details)
 
-print("Coleta de dados concluída e salva no banco de dados")
+logging.info("Coleta de dados concluída e salva no banco de dados")
