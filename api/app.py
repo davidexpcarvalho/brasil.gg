@@ -16,7 +16,7 @@ def add_player():
         nick = request.form["nick"]
         tag_line = request.form["tag_line"]
         team_name = request.form["team_name"]
-        api_key = "RGAPI-5704b123-5507-4266-a9b2-076fecc49df0"  # Substitua pelo valor da sua chave de API
+        api_key = "YOUR_API_KEY"  # Substitua pelo valor da sua chave de API
 
         # Obtém o PUUID do jogador
         puuid = get_puuid(nick, tag_line, api_key)
@@ -30,6 +30,14 @@ def add_player():
             return "Erro ao obter o PUUID. Verifique os detalhes do jogador e tente novamente."
 
     return render_template("add_player.html")
+
+@app.route("/player/<int:player_id>")
+def player_details(player_id):
+    player = session.query(Player).get(player_id)
+    if player:
+        return render_template("player_details.html", player=player)
+    else:
+        return "Jogador não encontrado.", 404
 
 if __name__ == "__main__":
     app.run(debug=True)
