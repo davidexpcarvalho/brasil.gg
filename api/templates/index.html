@@ -1,4 +1,4 @@
-<!-- templates/index.html -->
+<!-- api/templates/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,7 +11,11 @@
     <a href="{{ url_for('add_player') }}">Adicionar Novo Jogador</a>
     <ul>
         {% for player in players %}
-        <li>{{ player.player_name }} ({{ player.nick }}) - Time: {{ player.team_name }}</li>
+            <li>
+                <a href="{{ url_for('player_details', player_id=player.id) }}">
+                    {{ player.nick }}#{{ player.tag_line }} ({{ player.player_name }}) - Time: {{ player.team_name }}
+                </a>
+            </li>
         {% endfor %}
     </ul>
 </body>
