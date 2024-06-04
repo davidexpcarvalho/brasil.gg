@@ -1,4 +1,4 @@
-pandas
+Flask
 requests
-sqlalchemy
-flask
+pandas
+SQLAlchemy
