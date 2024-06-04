@@ -260,7 +260,7 @@ def collect_player_data_and_save(game_name, tag_line, api_key, engine):
 # Exemplo de uso
 game_name = "exemplo_de_nome"
 tag_line = "1234"
-api_key = "sua_chave_api"
+api_key = "RGAPI-5704b123-5507-4266-a9b2-076fecc49df0"
 engine = create_engine(DATABASE_URL)
 
 # Adicionar um novo jogador
