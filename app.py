@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template, redirect, url_for
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -23,18 +23,23 @@ class Player(Base):
 
 Base.metadata.create_all(engine)
 
-@app.route('/players', methods=['POST'])
+@app.route('/add_player', methods=['GET', 'POST'])
 def add_player():
-    data = request.get_json()
-    new_player = Player(
-        player_name=data['player_name'],
-        nick=data['nick'],
-        tag_line=data['tag_line'],
-        team_name=data['team_name']
-    )
-    session.add(new_player)
-    session.commit()
-    return jsonify({'message': 'Player added successfully!'}), 201
+    if request.method == 'POST':
+        player_name = request.form['player_name']
+        nick = request.form['nick']
+        tag_line = request.form['tag_line']
+        team_name = request.form['team_name']
+        new_player = Player(
+            player_name=player_name,
+            nick=nick,
+            tag_line=tag_line,
+            team_name=team_name
+        )
+        session.add(new_player)
+        session.commit()
+        return redirect(url_for('add_player'))
+    return render_template('add_player.html')
 
 @app.route('/players', methods=['GET'])
 def get_players():
