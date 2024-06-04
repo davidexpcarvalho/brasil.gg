@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates')
 
 DATABASE_URL = 'postgresql://postgres.ogwhaifbcpmhvavyeujd:mj4y,#3%EGP%7SZ@aws-0-sa-east-1.pooler.supabase.com:6543/postgres'
 engine = create_engine(DATABASE_URL)
