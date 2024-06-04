@@ -1,5 +1,6 @@
+# api/app.py
 from flask import Flask, render_template, request, redirect, url_for
-from brasilgg import Player, session, get_puuid
+from api.brasilgg import Player, session, get_puuid
 
 app = Flask(__name__)
 
