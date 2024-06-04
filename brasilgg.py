@@ -56,7 +56,7 @@ def get_existing_match_ids():
 
 # Processar jogadores
 players = session.query(Player).all()
-api_key = "RGAPI-f4722c95-6f65-4b9c-a34d-2d5d56f7faa2"
+api_key = "RGAPI-5704b123-5507-4266-a9b2-076fecc49df0"
 
 champion_translation = get_champion_translation()
 
