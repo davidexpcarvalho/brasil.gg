@@ -1,7 +1,28 @@
+import os
 import requests
 import pandas as pd
 import time
-import os
+from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+
+# Configuração do banco de dados SQLite
+DATABASE_URL = "sqlite:///players.db"
+Base = declarative_base()
+
+class Player(Base):
+    __tablename__ = 'players'
+    id = Column(Integer, primary_key=True)
+    player_name = Column(String, nullable=False)
+    nick = Column(String, nullable=False)
+    tag_line = Column(String, nullable=False)
+    team_name = Column(String)
+    puuid = Column(String)
+
+engine = create_engine(DATABASE_URL)
+Base.metadata.create_all(engine)
+Session = sessionmaker(bind=engine)
+session = Session()
 
 # Função para obter a PUUID do jogador
 def get_puuid(game_name, tag_line, api_key):
@@ -141,73 +162,48 @@ def get_champion_translation():
 
     return {int(value["key"]): value["name"] for key, value in champions.items()}
 
-# Função para salvar progresso em arquivos Excel
-def save_progress_to_excel(all_match_details, team_name):
-    if not all_match_details:
+# Função para salvar progresso no banco de dados
+def save_progress_to_db(match_details):
+    if not match_details:
         return
-    file_name = f"match_history_{team_name}.xlsx"
-    match_details_df = pd.DataFrame(all_match_details)
-    if os.path.exists(file_name):
-        existing_df = pd.read_excel(file_name)
-        match_details_df = pd.concat([existing_df, match_details_df], ignore_index=True)
-    match_details_df.to_excel(file_name, index=False)
+    for match_detail in match_details:
+        session.add(match_detail)
+    session.commit()
 
 # Obter IDs das partidas já processadas, se existirem
-def get_existing_match_ids(file_name):
-    if os.path.exists(file_name):
-        existing_data = pd.read_excel(file_name)
-        return set(existing_data['match_id'].astype(str).tolist())
-    return set()
+def get_existing_match_ids():
+    match_ids = session.query(Player.match_id).all()
+    return set([match_id for (match_id,) in match_ids])
 
-# Dicionário para armazenar detalhes das partidas por time
-team_match_details = {}
-
-players_df = pd.read_excel('players.xlsx')
-api_key = os.getenv("RIOT_API_KEY")  # Obtém a chave da API a partir das variáveis de ambiente
-
-if not api_key:
-    raise ValueError("A chave da API não foi encontrada nas variáveis de ambiente.")
+# Processar jogadores
+players = session.query(Player).all()
+api_key = "RGAPI-5704b123-5507-4266-a9b2-076fecc49df0"  # Certifique-se de que sua chave de API está correta e atualizada
 
 # Obter tradução dos campeões
 champion_translation = get_champion_translation()
 
-# Processar jogadores
-for idx, player in players_df.iterrows():
-    player_name = player['player_name']
-    game_name = player['nick']
-    tag_line = player['tag_line']
-    team_name = player['team_name']
+for player in players:
+    player_name = player.player_name
+    game_name = player.nick
+    tag_line = player.tag_line
+    team_name = player.team_name
     print(f"Processando jogador {player_name} ({game_name}) do time {team_name}")
 
-    if team_name not in team_match_details:
-        team_match_details[team_name] = []
-
-    puuid = player['puuid']
-    if pd.isna(puuid) or not puuid:
+    puuid = player.puuid
+    if not puuid:
         puuid = get_puuid(game_name, tag_line, api_key)
         if puuid:
-            players_df.at[idx, 'puuid'] = puuid
+            player.puuid = puuid
+            session.commit()
     else:
-        puuid = player['puuid']
+        puuid = player.puuid
 
     if not puuid:
         print(f"PUUID não encontrado para o jogador {player_name}, pulando.")
         continue
 
-    existing_match_ids = get_existing_match_ids(f"match_history_{team_name}.xlsx")
+    existing_match_ids = get_existing_match_ids()
     match_details = get_match_details(puuid, player_name, api_key, existing_match_ids, champion_translation)
-    team_match_details[team_name].extend(match_details)
+    save_progress_to_db(match_details)
 
-    # Salvar progresso a cada 100 partidas por time
-    if len(team_match_details[team_name]) >= 100:
-        save_progress_to_excel(team_match_details[team_name], team_name)
-        team_match_details[team_name] = []  # Resetar lista após salvar
-
-# Salvar quaisquer dados restantes após o loop
-for team_name, match_details in team_match_details.items():
-    save_progress_to_excel(match_details, team_name)
-
-# Salvar planilha de jogadores atualizada
-players_df.to_excel('players.xlsx', index=False)
-
-print("Coleta de dados concluída e salva nos arquivos específicos de cada time")
+print("Coleta de dados concluída e salva no banco de dados")
