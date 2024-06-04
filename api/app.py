@@ -1,51 +1,59 @@
-from flask import Flask, request, render_template, redirect, url_for, jsonify
-from sqlalchemy import create_engine, Column, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from flask import Flask, jsonify, request
+from brasilgg import Player, session, get_puuid, save_progress_to_db, get_existing_match_ids, get_champion_translation
 
 app = Flask(__name__)
 
-# Configuração do banco de dados
-DATABASE_URL = 'sqlite:///players.db'
-engine = create_engine(DATABASE_URL)
-Base = declarative_base()
-Session = sessionmaker(bind=engine)
-session = Session()
-
-class Player(Base):
-    __tablename__ = 'players'
-    id = Column(Integer, primary_key=True)
-    player_name = Column(String)
-    nick = Column(String)
-    tag_line = Column(String)
-    team_name = Column(String)
-    puuid = Column(String)
-
-Base.metadata.create_all(engine)
-
-@app.route('/add_player', methods=['GET', 'POST'])
+@app.route('/api/add_player', methods=['POST'])
 def add_player():
-    if request.method == 'POST':
-        player_name = request.form['player_name']
-        nick = request.form['nick']
-        tag_line = request.form['tag_line']
-        team_name = request.form['team_name']
-        new_player = Player(
-            player_name=player_name,
-            nick=nick,
-            tag_line=tag_line,
-            team_name=team_name
-        )
-        session.add(new_player)
-        session.commit()
-        return redirect(url_for('add_player'))
-    return render_template('add_player.html')
+    data = request.json
+    player_name = data.get('player_name')
+    nick = data.get('nick')
+    tag_line = data.get('tag_line')
+    team_name = data.get('team_name')
+    match_id = data.get('match_id')
 
-@app.route('/players', methods=['GET'])
-def get_players():
+    if not all([player_name, nick, tag_line, team_name]):
+        return jsonify({"error": "Missing player data"}), 400
+
+    player = Player(player_name=player_name, nick=nick, tag_line=tag_line, team_name=team_name, match_id=match_id)
+    session.add(player)
+    session.commit()
+    return jsonify({"message": "Player added successfully!"}), 201
+
+@app.route('/api/process_players', methods=['POST'])
+def process_players():
+    api_key = request.json.get('api_key')
+    if not api_key:
+        return jsonify({"error": "API key is required"}), 400
+
+    champion_translation = get_champion_translation()
     players = session.query(Player).all()
-    result = [{'player_name': player.player_name, 'nick': player.nick, 'tag_line': player.tag_line, 'team_name': player.team_name, 'puuid': player.puuid} for player in players]
-    return jsonify(result)
+
+    for player in players:
+        player_name = player.player_name
+        game_name = player.nick
+        tag_line = player.tag_line
+        team_name = player.team_name
+        print(f"Processing player {player_name} ({game_name}) from team {team_name}")
+
+        puuid = player.puuid
+        if not puuid:
+            puuid = get_puuid(game_name, tag_line, api_key)
+            if puuid:
+                player.puuid = puuid
+                session.commit()
+        else:
+            puuid = player.puuid
+
+        if not puuid:
+            print(f"PUUID not found for player {player_name}, skipping.")
+            continue
+
+        existing_match_ids = get_existing_match_ids()
+        match_details = get_match_details(puuid, player_name, api_key, existing_match_ids, champion_translation)
+        save_progress_to_db(match_details)
+
+    return jsonify({"message": "Players processed successfully!"}), 200
 
 if __name__ == '__main__':
     app.run(debug=True)
