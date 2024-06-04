@@ -1,10 +1,9 @@
-from flask import Flask, jsonify, request
-from api.app import app as application
+from api.app import app
 
 # Verificação simples para ver se o servidor está funcionando
-@application.route("/")
+@app.route("/")
 def index():
-    return jsonify({"message": "API está funcionando!"})
+    return "API está funcionando!"
 
 if __name__ == "__main__":
-    application.run(debug=True)
+    app.run(debug=True)
