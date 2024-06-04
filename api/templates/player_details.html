@@ -1,0 +1,18 @@
+<!-- api/templates/player_details.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Jogador</title>
+</head>
+<body>
+    <h1>Detalhes do Jogador</h1>
+    <p><strong>Nome:</strong> {{ player.player_name }}</p>
+    <p><strong>Nick:</strong> {{ player.nick }}</p>
+    <p><strong>Tag Line:</strong> {{ player.tag_line }}</p>
+    <p><strong>Time:</strong> {{ player.team_name }}</p>
+    <p><strong>PUUID:</strong> {{ player.puuid }}</p>
+    <a href="{{ url_for('index') }}">Voltar à Lista de Jogadores</a>
+</body>
+</html>
