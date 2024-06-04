@@ -5,7 +5,6 @@ import time
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-import logging
 
 # Configuração do banco de dados
 DATABASE_URL = 'postgresql://postgres.ogwhaifbcpmhvavyeujd:mj4y,#3%EGP%7SZ@aws-0-sa-east-1.pooler.supabase.com:6543/postgres'
@@ -32,7 +31,7 @@ def get_puuid(game_name, tag_line, api_key):
     if response.status_code == 200:
         return response.json()['puuid']
     else:
-        logging.error(f"Erro ao obter PUUID para {game_name}#{tag_line}: {response.status_code}")
+        print(f"Erro ao obter PUUID para {game_name}#{tag_line}: {response.status_code}")
         return None
 
 def get_champion_translation():
@@ -67,7 +66,7 @@ for player in players:
     game_name = player.nick
     tag_line = player.tag_line
     team_name = player.team_name
-    logging.info(f"Processando jogador {player_name} ({game_name}) do time {team_name}")
+    print(f"Processando jogador {player_name} ({game_name}) do time {team_name}")
 
     puuid = player.puuid
     if not puuid:
@@ -79,11 +78,11 @@ for player in players:
         puuid = player.puuid
 
     if not puuid:
-        logging.warning(f"PUUID não encontrado para o jogador {player_name}, pulando.")
+        print(f"PUUID não encontrado para o jogador {player_name}, pulando.")
         continue
 
     existing_match_ids = get_existing_match_ids()
     match_details = get_match_details(puuid, player_name, api_key, existing_match_ids, champion_translation)
     save_progress_to_db(match_details)
 
-logging.info("Coleta de dados concluída e salva no banco de dados")
+print("Coleta de dados concluída e salva no banco de dados")
