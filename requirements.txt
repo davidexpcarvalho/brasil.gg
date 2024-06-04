@@ -1,3 +1,5 @@
-requests
 pandas
-openpyxl
+requests
+sqlalchemy
+sqlite
+flask
