@@ -21,17 +21,9 @@
     </table>
     
     <h2>Player Statistics</h2>
-    <table id="player-statistics-table" border="1">
-        <thead>
-            <tr>
-                <th>Player Name</th>
-                <th>Champions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Dados da tabela serão preenchidos dinamicamente -->
-        </tbody>
-    </table>
+    <div id="player-statistics-container">
+        <!-- Dados dos jogadores serão preenchidos dinamicamente -->
+    </div>
 
     <script>
         // URLs dos arquivos JSON hospedados no GitHub Pages
@@ -39,61 +31,83 @@
         const playerStatisticsJsonUrl = 'https://davidexpcarvalho.github.io/brasil.gg/player_statistics_rows.json';
 
         // Função para criar a tabela
-        function createTable(data, tableId, isGrouped = false) {
+        function createTable(data, tableId) {
             const table = document.getElementById(tableId);
             const thead = table.querySelector('thead tr');
             const tbody = table.querySelector('tbody');
 
-            if (isGrouped) {
-                // Agrupar dados por jogador
-                const groupedData = data.reduce((acc, row) => {
-                    if (!acc[row.player_name]) {
-                        acc[row.player_name] = [];
-                    }
-                    acc[row.player_name].push(row);
-                    return acc;
-                }, {});
+            // Preencher cabeçalhos
+            const headers = Object.keys(data[0]);
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header;
+                thead.appendChild(th);
+            });
 
-                // Preencher dados agrupados
-                Object.keys(groupedData).forEach(player => {
-                    const tr = document.createElement('tr');
-                    const tdPlayer = document.createElement('td');
-                    const tdChampions = document.createElement('td');
-                    tdPlayer.textContent = player;
-                    
-                    // Criar lista de campeões
-                    const ul = document.createElement('ul');
-                    groupedData[player].forEach(championData => {
-                        const li = document.createElement('li');
-                        li.textContent = `Champion: ${championData.champion}, Games Played: ${championData.games_played}, Wins: ${championData.wins}, Win Rate: ${championData.win_rate}`;
-                        ul.appendChild(li);
-                    });
-
-                    tdChampions.appendChild(ul);
-                    tr.appendChild(tdPlayer);
-                    tr.appendChild(tdChampions);
-                    tbody.appendChild(tr);
-                });
-            } else {
-                // Preencher cabeçalhos
-                const headers = Object.keys(data[0]);
+            // Preencher dados
+            data.forEach(row => {
+                const tr = document.createElement('tr');
                 headers.forEach(header => {
+                    const td = document.createElement('td');
+                    td.textContent = row[header];
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Função para criar tabelas agrupadas por jogador
+        function createGroupedTables(data, containerId) {
+            const container = document.getElementById(containerId);
+
+            // Agrupar dados por jogador
+            const groupedData = data.reduce((acc, row) => {
+                if (!acc[row.player_name]) {
+                    acc[row.player_name] = [];
+                }
+                acc[row.player_name].push(row);
+                return acc;
+            }, {});
+
+            // Preencher dados agrupados
+            Object.keys(groupedData).forEach(player => {
+                // Criar título do jogador
+                const playerTitle = document.createElement('h3');
+                playerTitle.textContent = player;
+                container.appendChild(playerTitle);
+
+                // Criar tabela para os campeões do jogador
+                const table = document.createElement('table');
+                table.border = "1";
+
+                const thead = document.createElement('thead');
+                const trHead = document.createElement('tr');
+                ['Campeão', 'Jogos Jogados', 'Vitórias', 'Taxa de Vitórias'].forEach(header => {
                     const th = document.createElement('th');
                     th.textContent = header;
-                    thead.appendChild(th);
+                    trHead.appendChild(th);
                 });
+                thead.appendChild(trHead);
+                table.appendChild(thead);
 
-                // Preencher dados
-                data.forEach(row => {
+                const tbody = document.createElement('tbody');
+                groupedData[player].forEach(championData => {
                     const tr = document.createElement('tr');
-                    headers.forEach(header => {
+                    ['champion', 'games_played', 'wins', 'win_rate'].forEach(field => {
                         const td = document.createElement('td');
-                        td.textContent = row[header];
+                        if (field === 'win_rate') {
+                            td.textContent = `${(championData[field] * 100).toFixed(2)}%`;
+                        } else {
+                            td.textContent = championData[field];
+                        }
                         tr.appendChild(td);
                     });
                     tbody.appendChild(tr);
                 });
-            }
+                table.appendChild(tbody);
+
+                container.appendChild(table);
+            });
         }
 
         // Buscar e exibir os dados das duas tabelas
@@ -107,7 +121,7 @@
         fetch(playerStatisticsJsonUrl)
             .then(response => response.json())
             .then(data => {
-                createTable(data, 'player-statistics-table', true);
+                createGroupedTables(data, 'player-statistics-container');
             })
             .catch(error => console.error('Erro ao buscar dados player statistics:', error));
     </script>
