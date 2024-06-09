@@ -1,0 +1,40 @@
+name: Convert Excel to JSON
+
+on:
+  schedule:
+    - cron: '0 * * * *' # Executar a cada hora
+  push:
+    branches:
+      - main
+
+jobs:
+  convert:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pandas requests
+
+    - name: Run conversion script
+      run: |
+        python convert_excel_to_json.py
+
+    - name: Commit and push JSON files
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        git add *.json
+        git commit -m 'Update JSON files from Excel conversion'
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
