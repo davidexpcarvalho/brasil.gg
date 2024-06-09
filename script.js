@@ -95,7 +95,13 @@ async function createPlayerPages() {
             const dropdownItem = document.createElement('div');
             dropdownItem.classList.add('dropdown-item');
             dropdownItem.textContent = player;
-            dropdownItem.onclick = () => showPlayerPage(playerFileName);
+            dropdownItem.setAttribute('role', 'option');
+            dropdownItem.setAttribute('aria-selected', 'false');
+            dropdownItem.onclick = () => {
+                showPlayerPage(playerFileName);
+                document.querySelectorAll('.dropdown-item').forEach(item => item.setAttribute('aria-selected', 'false'));
+                dropdownItem.setAttribute('aria-selected', 'true');
+            };
             dropdown.appendChild(dropdownItem);
         });
     } catch (error) {
@@ -140,7 +146,7 @@ function filterPlayers() {
         }
     });
 
-    dropdown.style.display = hasResults ? 'block' : 'none';
+    dropdown.setAttribute('aria-expanded', hasResults);
 }
 
 document.getElementById('search-input').addEventListener('input', filterPlayers);
