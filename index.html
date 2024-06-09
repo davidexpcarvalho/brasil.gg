@@ -7,7 +7,21 @@
 </head>
 <body>
     <h1>Dados do Excel</h1>
-    <table id="data-table" border="1">
+    
+    <h2>Underperforming</h2>
+    <table id="underperforming-table" border="1">
+        <thead>
+            <tr>
+                <!-- Cabeçalhos da tabela serão preenchidos dinamicamente -->
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Dados da tabela serão preenchidos dinamicamente -->
+        </tbody>
+    </table>
+    
+    <h2>Player Statistics</h2>
+    <table id="player-statistics-table" border="1">
         <thead>
             <tr>
                 <!-- Cabeçalhos da tabela serão preenchidos dinamicamente -->
@@ -19,12 +33,13 @@
     </table>
 
     <script>
-        // URL do arquivo JSON hospedado no GitHub Pages
-        const jsonUrl = 'https://davidexpcarvalho.github.io/brasil.gg/player_statistics_rows.json';
+        // URLs dos arquivos JSON hospedados no GitHub Pages
+        const underperformingJsonUrl = 'https://davidexpcarvalho.github.io/brasil.gg/underperforming_rows.json';
+        const playerStatisticsJsonUrl = 'https://davidexpcarvalho.github.io/brasil.gg/player_statistics_rows.json';
 
         // Função para criar a tabela
-        function createTable(data) {
-            const table = document.getElementById('data-table');
+        function createTable(data, tableId) {
+            const table = document.getElementById(tableId);
             const thead = table.querySelector('thead tr');
             const tbody = table.querySelector('tbody');
 
@@ -48,13 +63,20 @@
             });
         }
 
-        // Buscar e exibir os dados
-        fetch(jsonUrl)
+        // Buscar e exibir os dados das duas tabelas
+        fetch(underperformingJsonUrl)
             .then(response => response.json())
             .then(data => {
-                createTable(data);
+                createTable(data, 'underperforming-table');
             })
-            .catch(error => console.error('Erro ao buscar dados:', error));
+            .catch(error => console.error('Erro ao buscar dados underperforming:', error));
+
+        fetch(playerStatisticsJsonUrl)
+            .then(response => response.json())
+            .then(data => {
+                createTable(data, 'player-statistics-table');
+            })
+            .catch(error => console.error('Erro ao buscar dados player statistics:', error));
     </script>
 </body>
 </html>
