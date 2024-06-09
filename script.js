@@ -51,7 +51,7 @@ function createPaginationControls(data, pageSize, currentPage, containerId, upda
     let paginationHtml = '<div class="pagination">';
 
     for (let i = 1; i <= totalPages; i++) {
-        paginationHtml += `<button ${i === currentPage ? 'class="active"' : ''} onclick="${updatePageFunction}(${i})">${i}</button>`;
+        paginationHtml += `<button ${i === currentPage ? 'class="active"' : ''} onclick="${updatePageFunction.name}(${i})">${i}</button>`;
     }
 
     paginationHtml += '</div>';
