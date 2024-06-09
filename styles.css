@@ -131,11 +131,15 @@ th {
 }
 
 .sortable:after {
-    content: ' \u25B2';  /* Código Unicode para seta para cima */
+    content: '';
     position: absolute;
     right: 5px;
 }
 
-.sortable[data-sort-asc='false']:after {
-    content: ' \u25BC';  /* Código Unicode para seta para baixo */
+.sortable.asc:after {
+    content: '▲';
+}
+
+.sortable.desc:after {
+    content: '▼';
 }
