@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dados do Excel</title>
+</head>
+<body>
+    <h1>Dados do Excel</h1>
+    <table id="data-table" border="1">
+        <thead>
+            <tr>
+                <!-- Cabeçalhos da tabela serão preenchidos dinamicamente -->
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Dados da tabela serão preenchidos dinamicamente -->
+        </tbody>
+    </table>
+
+    <script>
+        // URL do arquivo JSON hospedado no GitHub Pages
+        const jsonUrl = 'https://davidexpcarvalho.github.io/brasil.gg/player_statistics_rows.json';
+
+        // Função para criar a tabela
+        function createTable(data) {
+            const table = document.getElementById('data-table');
+            const thead = table.querySelector('thead tr');
+            const tbody = table.querySelector('tbody');
+
+            // Preencher cabeçalhos
+            const headers = Object.keys(data[0]);
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header;
+                thead.appendChild(th);
+            });
+
+            // Preencher dados
+            data.forEach(row => {
+                const tr = document.createElement('tr');
+                headers.forEach(header => {
+                    const td = document.createElement('td');
+                    td.textContent = row[header];
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Buscar e exibir os dados
+        fetch(jsonUrl)
+            .then(response => response.json())
+            .then(data => {
+                createTable(data);
+            })
+            .catch(error => console.error('Erro ao buscar dados:', error));
+    </script>
+</body>
+</html>
