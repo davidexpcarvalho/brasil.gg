@@ -14,13 +14,10 @@
         }
         h1 {
             text-align: center;
-            color: #006600; /* Verde */
+            color: #006600; /* Verde da bandeira do Brasil */
         }
         h2 {
-            color: #ffcc00; /* Amarelo */
-        }
-        h1, h2, .container, .player-list, #back-button {
-            transition: all 0.3s ease-in-out;
+            color: #ffcc00; /* Amarelo da bandeira do Brasil */
         }
         .container {
             margin: 20px auto;
@@ -30,42 +27,6 @@
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        .player-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 10px;
-            list-style-type: none;
-            padding: 0;
-        }
-        .player-list li {
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            text-align: center;
-            padding: 10px;
-        }
-        .player-list a {
-            text-decoration: none;
-            color: #006600;
-            font-size: 18px;
-        }
-        .player-list a:hover {
-            text-decoration: underline;
-            color: #004d00;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
         #search-container {
             text-align: center;
             margin: 20px;
@@ -74,6 +35,28 @@
             padding: 10px;
             width: 80%;
             font-size: 16px;
+        }
+        #dropdown {
+            position: absolute;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+            width: calc(80% - 22px);
+            left: 10%;
+            display: none;
+            z-index: 1;
+        }
+        .dropdown-item {
+            padding: 10px;
+            cursor: pointer;
+        }
+        .dropdown-item:hover {
+            background-color: #f2f2f2;
+        }
+        .hidden {
+            display: none;
         }
         #back-button {
             display: block;
@@ -89,8 +72,18 @@
         #back-button:hover {
             background-color: #004d00;
         }
-        .hidden {
-            display: none;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
         }
     </style>
 </head>
@@ -98,22 +91,12 @@
     <h1>Índice de Jogadores</h1>
     <div id="search-container">
         <input type="text" id="search-input" placeholder="Buscar jogador...">
-    </div>
-    <div class="container">
-        <ul id="player-list" class="player-list"></ul>
-    </div>
-    <div id="pagination-container" class="container hidden">
-        <button id="prev-button" onclick="changePage(-1)">Anterior</button>
-        <span id="page-info"></span>
-        <button id="next-button" onclick="changePage(1)">Próximo</button>
+        <div id="dropdown"></div>
     </div>
 
     <script>
         const playerStatisticsJsonUrl = 'https://davidexpcarvalho.github.io/brasil.gg/player_statistics_rows.json';
         const underperformingPositionsJsonUrl = 'https://davidexpcarvalho.github.io/brasil.gg/underperforming_positions_rows.json';
-        const playersPerPage = 10;
-        let currentPage = 1;
-        let totalPages = 1;
 
         async function fetchJson(url) {
             const response = await fetch(url);
@@ -180,23 +163,12 @@
                 ...Object.keys(groupedUnderperformingPositions),
             ]);
 
-            const playerList = document.getElementById('player-list');
-            playerList.innerHTML = ''; // Clear existing list items
+            const dropdown = document.getElementById('dropdown');
 
-            totalPages = Math.ceil(allPlayers.size / playersPerPage);
-            updatePaginationInfo();
-
-            Array.from(allPlayers).forEach(player => {
+            allPlayers.forEach(player => {
                 const playerFileName = `player_${player.replace(/[^a-zA-Z0-9]/g, '_')}.html`;
                 const playerStats = groupedPlayerStats[player] || [];
                 const playerUnderperforming = groupedUnderperformingPositions[player] || [];
-
-                const li = document.createElement('li');
-                const a = document.createElement('a');
-                a.href = `#${playerFileName}`;
-                a.textContent = player;
-                li.appendChild(a);
-                playerList.appendChild(li);
 
                 const playerPage = document.createElement('div');
                 playerPage.id = playerFileName;
@@ -204,7 +176,7 @@
                 playerPage.style.display = 'none';
                 playerPage.innerHTML = `
                     <h1>Análise do Jogador ${player}</h1>
-                    <button id="back-button" onclick="showPlayerList()">Voltar</button>
+                    <button id="back-button" onclick="showSearch()">Voltar</button>
                     <div class="container">
                         <h2>Estatísticas do Jogador</h2>
                         ${createTableHtml(playerStats, ['Campeão', 'Jogos Jogados', 'Vitórias', 'Taxa de Vitórias'], {
@@ -226,66 +198,43 @@
                 `;
                 document.body.appendChild(playerPage);
 
-                a.addEventListener('click', function () {
-                    document.querySelectorAll('.player-page').forEach(page => page.style.display = 'none');
-                    playerPage.style.display = 'block';
-                    document.getElementById('player-list').parentElement.style.display = 'none';
-                    document.getElementById('search-container').style.display = 'none';
-                    document.getElementById('pagination-container').classList.add('hidden');
-                });
+                const dropdownItem = document.createElement('div');
+                dropdownItem.classList.add('dropdown-item');
+                dropdownItem.textContent = player;
+                dropdownItem.onclick = function() {
+                    showPlayerPage(playerFileName);
+                };
+                dropdown.appendChild(dropdownItem);
             });
-
-            showPage(currentPage);
         }
 
-        function showPage(page) {
-            const playerList = document.getElementById('player-list');
-            const players = playerList.querySelectorAll('li');
-            const start = (page - 1) * playersPerPage;
-            const end = start + playersPerPage;
-
-            players.forEach((player, index) => {
-                if (index >= start && index < end) {
-                    player.style.display = 'block';
-                } else {
-                    player.style.display = 'none';
-                }
-            });
-
-            updatePaginationInfo();
-        }
-
-        function changePage(direction) {
-            currentPage += direction;
-            if (currentPage < 1) currentPage = 1;
-            if (currentPage > totalPages) currentPage = totalPages;
-            showPage(currentPage);
-        }
-
-        function updatePaginationInfo() {
-            document.getElementById('page-info').textContent = `Página ${currentPage} de ${totalPages}`;
-            document.getElementById('prev-button').disabled = currentPage === 1;
-            document.getElementById('next-button').disabled = currentPage === totalPages;
-        }
-
-        function showPlayerList() {
+        function showPlayerPage(playerFileName) {
             document.querySelectorAll('.player-page').forEach(page => page.style.display = 'none');
-            document.getElementById('player-list').parentElement.style.display = 'block';
+            document.getElementById(playerFileName).style.display = 'block';
+            document.getElementById('search-container').style.display = 'none';
+        }
+
+        function showSearch() {
+            document.querySelectorAll('.player-page').forEach(page => page.style.display = 'none');
             document.getElementById('search-container').style.display = 'block';
-            document.getElementById('pagination-container').classList.remove('hidden');
         }
 
         function filterPlayers() {
             const searchInput = document.getElementById('search-input').value.toLowerCase();
-            const players = document.querySelectorAll('.player-list li');
-            players.forEach(player => {
-                const playerName = player.textContent.toLowerCase();
-                if (playerName.includes(searchInput)) {
-                    player.style.display = 'block';
+            const dropdown = document.getElementById('dropdown');
+            const dropdownItems = dropdown.querySelectorAll('.dropdown-item');
+            let hasResults = false;
+
+            dropdownItems.forEach(item => {
+                if (item.textContent.toLowerCase().includes(searchInput)) {
+                    item.style.display = 'block';
+                    hasResults = true;
                 } else {
-                    player.style.display = 'none';
+                    item.style.display = 'none';
                 }
             });
+
+            dropdown.style.display = hasResults ? 'block' : 'none';
         }
 
         document.getElementById('search-input').addEventListener('input', filterPlayers);
