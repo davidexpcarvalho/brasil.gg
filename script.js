@@ -18,7 +18,7 @@ function createTableHtml(data, headers, fieldMap, pageSize, currentPage, sortabl
 
     let tableHtml = '<table><thead><tr>';
     headers.forEach(header => {
-        tableHtml += `<th${sortable ? ` class="sortable" onclick="sortTable('${header}', '${currentPage}')"` : ''}>${header}</th>`;
+        tableHtml += `<th${sortable ? ` class="sortable" data-sort-asc="true" onclick="sortTable('${header}', ${currentPage})"` : ''}>${header}</th>`;
     });
     tableHtml += '</tr></thead><tbody>';
 
