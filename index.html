@@ -78,6 +78,10 @@
             return response.json();
         }
 
+        function formatNumber(value) {
+            return Number(value).toFixed(1);
+        }
+
         function createTableHtml(data, headers, fieldMap) {
             if (data.length === 0) {
                 return '<p>Nenhum dado disponível.</p>';
@@ -94,8 +98,11 @@
                 headers.forEach(header => {
                     const field = fieldMap[header];
                     let value = row[field] !== undefined ? row[field] : 'N/A';
+                    if (typeof value === 'number') {
+                        value = formatNumber(value);
+                    }
                     if (field === 'win_rate' || field === 'desempenho') {
-                        value = value !== 'N/A' ? `${(value * 100).toFixed(2)}%` : value;
+                        value = value !== 'N/A' ? `${formatNumber(value * 100)}%` : value;
                     }
                     tableHtml += `<td>${value}</td>`;
                 });
