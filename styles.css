@@ -129,9 +129,9 @@ th {
 }
 
 .sortable:after {
-    content: ' \u25B2';
+    content: ' ▲';  /* Código do Unicode para seta para cima */
 }
 
 .sortable[data-sort-asc='false']:after {
-    content: ' \u25BC';
+    content: ' ▼';  /* Código do Unicode para seta para baixo */
 }
