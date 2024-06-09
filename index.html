@@ -4,76 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Análise dos Jogadores</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        .container {
+            margin: 20px auto;
+            width: 80%;
+        }
+        .player-section {
+            margin-bottom: 40px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
 </head>
 <body>
     <h1>Análise dos Jogadores</h1>
     
-    <h2>Underperforming</h2>
-    <table id="underperforming-table" border="1">
-        <thead>
-            <tr>
-                <!-- Cabeçalhos da tabela serão preenchidos dinamicamente -->
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Dados da tabela serão preenchidos dinamicamente -->
-        </tbody>
-    </table>
-
-    <h2>Underperforming Positions</h2>
-    <table id="underperforming-positions-table" border="1">
-        <thead>
-            <tr>
-                <!-- Cabeçalhos da tabela serão preenchidos dinamicamente -->
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Dados da tabela serão preenchidos dinamicamente -->
-        </tbody>
-    </table>
-    
-    <h2>Player Statistics</h2>
-    <div id="player-statistics-container">
-        <!-- Dados dos jogadores serão preenchidos dinamicamente -->
+    <div class="container">
+        <h2>Underperforming Positions</h2>
+        <div id="underperforming-positions-container" class="player-section">
+            <!-- Dados dos jogadores subdesempenhados serão preenchidos dinamicamente -->
+        </div>
+        
+        <h2>Player Statistics</h2>
+        <div id="player-statistics-container" class="player-section">
+            <!-- Dados das estatísticas dos jogadores serão preenchidos dinamicamente -->
+        </div>
     </div>
 
     <script>
-        // URLs dos arquivos JSON hospedados no GitHub Pages
-        const underperformingJsonUrl = 'https://davidexpcarvalho.github.io/brasil.gg/underperforming_rows.json';
         const underperformingPositionsJsonUrl = 'https://davidexpcarvalho.github.io/brasil.gg/underperforming_positions_rows.json';
         const playerStatisticsJsonUrl = 'https://davidexpcarvalho.github.io/brasil.gg/player_statistics_rows.json';
 
-        // Função para criar a tabela
-        function createTable(data, tableId) {
-            const table = document.getElementById(tableId);
-            const thead = table.querySelector('thead tr');
-            const tbody = table.querySelector('tbody');
-
-            // Preencher cabeçalhos
-            const headers = Object.keys(data[0]);
-            headers.forEach(header => {
-                const th = document.createElement('th');
-                th.textContent = header;
-                thead.appendChild(th);
-            });
-
-            // Preencher dados
-            data.forEach(row => {
-                const tr = document.createElement('tr');
-                headers.forEach(header => {
-                    const td = document.createElement('td');
-                    td.textContent = row[header];
-                    tr.appendChild(td);
-                });
-                tbody.appendChild(tr);
-            });
-        }
-
-        // Função para criar tabelas agrupadas por jogador
-        function createGroupedTables(data, containerId) {
+        function createGroupedTables(data, containerId, headers) {
             const container = document.getElementById(containerId);
 
-            // Agrupar dados por jogador
             const groupedData = data.reduce((acc, row) => {
                 if (!acc[row.player_name]) {
                     acc[row.player_name] = [];
@@ -82,20 +63,17 @@
                 return acc;
             }, {});
 
-            // Preencher dados agrupados
             Object.keys(groupedData).forEach(player => {
-                // Criar título do jogador
+                const playerSection = document.createElement('div');
                 const playerTitle = document.createElement('h3');
                 playerTitle.textContent = player;
-                container.appendChild(playerTitle);
+                playerSection.appendChild(playerTitle);
 
-                // Criar tabela para os campeões do jogador
                 const table = document.createElement('table');
-                table.border = "1";
 
                 const thead = document.createElement('thead');
                 const trHead = document.createElement('tr');
-                ['Campeão', 'Jogos Jogados', 'Vitórias', 'Taxa de Vitórias'].forEach(header => {
+                headers.forEach(header => {
                     const th = document.createElement('th');
                     th.textContent = header;
                     trHead.appendChild(th);
@@ -104,44 +82,39 @@
                 table.appendChild(thead);
 
                 const tbody = document.createElement('tbody');
-                groupedData[player].forEach(championData => {
+                groupedData[player].forEach(dataRow => {
                     const tr = document.createElement('tr');
-                    ['champion', 'games_played', 'wins', 'win_rate'].forEach(field => {
+                    headers.forEach(header => {
                         const td = document.createElement('td');
-                        if (field === 'win_rate') {
-                            td.textContent = `${(championData[field] * 100).toFixed(2)}%`;
-                        } else {
-                            td.textContent = championData[field];
+                        let value = dataRow[header.toLowerCase().replace(/\s/g, '_')];
+                        if (header === 'Taxa de Vitórias' || header === 'Desempenho') {
+                            value = `${(value * 100).toFixed(2)}%`;
                         }
+                        td.textContent = value;
                         tr.appendChild(td);
                     });
                     tbody.appendChild(tr);
                 });
                 table.appendChild(tbody);
 
-                container.appendChild(table);
+                playerSection.appendChild(table);
+                container.appendChild(playerSection);
             });
         }
-
-        // Buscar e exibir os dados das tabelas
-        fetch(underperformingJsonUrl)
-            .then(response => response.json())
-            .then(data => {
-                createTable(data, 'underperforming-table');
-            })
-            .catch(error => console.error('Erro ao buscar dados underperforming:', error));
 
         fetch(underperformingPositionsJsonUrl)
             .then(response => response.json())
             .then(data => {
-                createTable(data, 'underperforming-positions-table');
+                const headers = ['Posição', 'Campeão', 'Jogos Jogados', 'Vitórias', 'Desempenho'];
+                createGroupedTables(data, 'underperforming-positions-container', headers);
             })
             .catch(error => console.error('Erro ao buscar dados underperforming positions:', error));
 
         fetch(playerStatisticsJsonUrl)
             .then(response => response.json())
             .then(data => {
-                createGroupedTables(data, 'player-statistics-container');
+                const headers = ['Campeão', 'Jogos Jogados', 'Vitórias', 'Taxa de Vitórias'];
+                createGroupedTables(data, 'player-statistics-container', headers);
             })
             .catch(error => console.error('Erro ao buscar dados player statistics:', error));
     </script>
