@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Análise dos Jogadores</title>
+    <title>Índice de Jogadores</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #e6e6e6;
             color: #333;
         }
-        h1, h2, h3 {
+        h1 {
             text-align: center;
             color: #006600; /* Verde da bandeira do Brasil */
         }
@@ -22,54 +22,73 @@
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        .player-section {
-            margin-bottom: 40px;
+        ul {
+            list-style-type: none;
+            padding: 0;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            background-color: #fafafa;
+        li {
+            margin: 10px 0;
         }
-        th, td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: left;
+        a {
+            text-decoration: none;
+            color: #006600;
+            font-size: 18px;
         }
-        th {
-            background-color: #ffcc00; /* Amarelo da bandeira do Brasil */
-        }
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-        tr:hover {
-            background-color: #d9edf7; /* Azul claro para hover */
+        a:hover {
+            text-decoration: underline;
+            color: #004d00;
         }
     </style>
 </head>
 <body>
-    <h1>Análise dos Jogadores</h1>
-    
+    <h1>Índice de Jogadores</h1>
     <div class="container">
-        <h2>Posições de Desempenho Inferior</h2>
-        <div id="underperforming-positions-container" class="player-section">
-            <!-- Dados dos jogadores subdesempenhados serão preenchidos dinamicamente -->
-        </div>
-        
-        <h2>Estatísticas dos Jogadores</h2>
-        <div id="player-statistics-container" class="player-section">
-            <!-- Dados das estatísticas dos jogadores serão preenchidos dinamicamente -->
-        </div>
+        <ul id="player-list">
+            <!-- Links para páginas dos jogadores serão preenchidos dinamicamente -->
+        </ul>
     </div>
 
     <script>
-        const underperformingPositionsJsonUrl = 'https://davidexpcarvalho.github.io/brasil.gg/underperforming_positions_rows.json';
         const playerStatisticsJsonUrl = 'https://davidexpcarvalho.github.io/brasil.gg/player_statistics_rows.json';
+        const underperformingPositionsJsonUrl = 'https://davidexpcarvalho.github.io/brasil.gg/underperforming_positions_rows.json';
 
-        function createGroupedTables(data, containerId, headers) {
-            const container = document.getElementById(containerId);
+        async function fetchJson(url) {
+            const response = await fetch(url);
+            return response.json();
+        }
 
-            const groupedData = data.reduce((acc, row) => {
+        function createTableHtml(data, headers) {
+            if (data.length === 0) {
+                return '<p>Nenhum dado disponível.</p>';
+            }
+
+            let tableHtml = '<table><thead><tr>';
+            headers.forEach(header => {
+                tableHtml += `<th>${header}</th>`;
+            });
+            tableHtml += '</tr></thead><tbody>';
+
+            data.forEach(row => {
+                tableHtml += '<tr>';
+                headers.forEach(header => {
+                    let value = row[header.toLowerCase().replace(/\s/g, '_')];
+                    if (header === 'Taxa de Vitórias' || header === 'Desempenho') {
+                        value = `${(value * 100).toFixed(2)}%`;
+                    }
+                    tableHtml += `<td>${value}</td>`;
+                });
+                tableHtml += '</tr>';
+            });
+
+            tableHtml += '</tbody></table>';
+            return tableHtml;
+        }
+
+        async function createPlayerPages() {
+            const playerStatistics = await fetchJson(playerStatisticsJsonUrl);
+            const underperformingPositions = await fetchJson(underperformingPositionsJsonUrl);
+
+            const groupedPlayerStats = playerStatistics.reduce((acc, row) => {
                 if (!acc[row.player_name]) {
                     acc[row.player_name] = [];
                 }
@@ -77,60 +96,60 @@
                 return acc;
             }, {});
 
-            Object.keys(groupedData).forEach(player => {
-                const playerSection = document.createElement('div');
-                const playerTitle = document.createElement('h3');
-                playerTitle.textContent = player;
-                playerSection.appendChild(playerTitle);
+            const groupedUnderperformingPositions = underperformingPositions.reduce((acc, row) => {
+                if (!acc[row.player_name]) {
+                    acc[row.player_name] = [];
+                }
+                acc[row.player_name].push(row);
+                return acc;
+            }, {});
 
-                const table = document.createElement('table');
+            const allPlayers = new Set([
+                ...Object.keys(groupedPlayerStats),
+                ...Object.keys(groupedUnderperformingPositions),
+            ]);
 
-                const thead = document.createElement('thead');
-                const trHead = document.createElement('tr');
-                headers.forEach(header => {
-                    const th = document.createElement('th');
-                    th.textContent = header;
-                    trHead.appendChild(th);
+            const playerList = document.getElementById('player-list');
+
+            allPlayers.forEach(player => {
+                const playerFileName = `player_${player.replace(/[^a-zA-Z0-9]/g, '_')}.html`;
+                const playerStats = groupedPlayerStats[player] || [];
+                const playerUnderperforming = groupedUnderperformingPositions[player] || [];
+
+                // Criar link na página inicial
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = `#${playerFileName}`;
+                a.textContent = player;
+                li.appendChild(a);
+                playerList.appendChild(li);
+
+                // Criar página do jogador
+                const playerPage = document.createElement('div');
+                playerPage.id = playerFileName;
+                playerPage.style.display = 'none';
+                playerPage.innerHTML = `
+                    <h1>Análise do Jogador ${player}</h1>
+                    <div class="container">
+                        <h2>Estatísticas do Jogador</h2>
+                        ${createTableHtml(playerStats, ['Campeão', 'Jogos Jogados', 'Vitórias', 'Taxa de Vitórias'])}
+                    </div>
+                    <div class="container">
+                        <h2>Posições de Desempenho Inferior</h2>
+                        ${createTableHtml(playerUnderperforming, ['Posição', 'Campeão', 'Jogos Jogados', 'Vitórias', 'Desempenho'])}
+                    </div>
+                `;
+                document.body.appendChild(playerPage);
+
+                // Adicionar evento de clique para mostrar a página do jogador
+                a.addEventListener('click', function () {
+                    document.querySelectorAll('.player-page').forEach(page => page.style.display = 'none');
+                    playerPage.style.display = 'block';
                 });
-                thead.appendChild(trHead);
-                table.appendChild(thead);
-
-                const tbody = document.createElement('tbody');
-                groupedData[player].forEach(dataRow => {
-                    const tr = document.createElement('tr');
-                    headers.forEach(header => {
-                        const td = document.createElement('td');
-                        let value = dataRow[header.toLowerCase().replace(/\s/g, '_')];
-                        if (header === 'Taxa de Vitórias' || header === 'Desempenho') {
-                            value = `${(value * 100).toFixed(2)}%`;
-                        }
-                        td.textContent = value;
-                        tr.appendChild(td);
-                    });
-                    tbody.appendChild(tr);
-                });
-                table.appendChild(tbody);
-
-                playerSection.appendChild(table);
-                container.appendChild(playerSection);
             });
         }
 
-        fetch(underperformingPositionsJsonUrl)
-            .then(response => response.json())
-            .then(data => {
-                const headers = ['Posição', 'Campeão', 'Jogos Jogados', 'Vitórias', 'Desempenho'];
-                createGroupedTables(data, 'underperforming-positions-container', headers);
-            })
-            .catch(error => console.error('Erro ao buscar dados de posições de desempenho inferior:', error));
-
-        fetch(playerStatisticsJsonUrl)
-            .then(response => response.json())
-            .then(data => {
-                const headers = ['Campeão', 'Jogos Jogados', 'Vitórias', 'Taxa de Vitórias'];
-                createGroupedTables(data, 'player-statistics-container', headers);
-            })
-            .catch(error => console.error('Erro ao buscar dados de estatísticas dos jogadores:', error));
+        createPlayerPages().then(() => console.log('Páginas dos jogadores geradas com sucesso.'));
     </script>
 </body>
 </html>
