@@ -1,5 +1,6 @@
 const playerStatisticsJsonUrl = 'https://davidexpcarvalho.github.io/brasil.gg/player_statistics_rows.json';
 const underperformingPositionsJsonUrl = 'https://davidexpcarvalho.github.io/brasil.gg/underperforming_positions_rows.json';
+const dataDragonVersion = '14.11.1';  // Versão atual do DataDragon
 
 async function fetchJson(url) {
     const response = await fetch(url);
@@ -9,6 +10,10 @@ async function fetchJson(url) {
 
 function formatNumber(value) {
     return Number(value).toFixed(1);
+}
+
+function createChampionImage(championName) {
+    return `<img src="https://ddragon.leagueoflegends.com/cdn/${dataDragonVersion}/img/champion/${championName}.png" alt="${championName}" width="20" height="20" style="vertical-align:middle; margin-right: 8px;">`;
 }
 
 function createTableHtml(data, headers, fieldMap, pageSize, currentPage, sortable = false) {
@@ -36,6 +41,9 @@ function createTableHtml(data, headers, fieldMap, pageSize, currentPage, sortabl
             }
             if (field === 'win_rate' || field === 'desempenho') {
                 value = value !== 'N/A' ? `${formatNumber(value * 100)}%` : value;
+            }
+            if (field === 'champion') {
+                value = createChampionImage(value) + value;
             }
             tableHtml += `<td>${value}</td>`;
         });
@@ -181,7 +189,7 @@ function initializeTablePaginationAndSorting(data, playerFileName, tableId, head
         document.getElementById(`${playerFileName}_${tableId}`).innerHTML = createTableHtml(data, headers, fieldMap, pageSize, currentPage, true);
         createPaginationControls(data, pageSize, currentPage, `${playerFileName}_${tableId}_pagination`, updateTable);
     };
-
+    
     updateTable(1);
 }
 
