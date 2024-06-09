@@ -200,10 +200,16 @@ function sortTable(header, currentPage) {
 
     const isAscending = table.getAttribute('data-sort-asc') === 'true';
     data.sort((a, b) => {
-        if (isNaN(a[index])) {
-            return isAscending ? a[index].localeCompare(b[index]) : b[index].localeCompare(a[index]);
+        let valA = a[index];
+        let valB = b[index];
+        if (valA.endsWith('%')) {
+            valA = parseFloat(valA.replace('%', '')) / 100;
+            valB = parseFloat(valB.replace('%', '')) / 100;
         }
-        return isAscending ? a[index] - b[index] : b[index] - a[index];
+        if (isNaN(valA)) {
+            return isAscending ? valA.localeCompare(valB) : valB.localeCompare(valA);
+        }
+        return isAscending ? valA - valB : valB - valA;
     });
 
     table.setAttribute('data-sort-asc', !isAscending);
@@ -229,7 +235,11 @@ function sortTable(header, currentPage) {
     initializeTablePaginationAndSorting(data.map(row => {
         let obj = {};
         headers.forEach((header, idx) => {
-            obj[headersMap[header]] = isNaN(row[idx]) ? row[idx] : parseFloat(row[idx]);
+            let value = row[idx];
+            if (value.endsWith('%')) {
+                value = parseFloat(value.replace('%', '')) / 100;
+            }
+            obj[headersMap[header]] = isNaN(value) ? value : parseFloat(value);
         });
         return obj;
     }), playerFileName, 'stats', headers, headersMap, 10);
