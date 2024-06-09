@@ -19,6 +19,18 @@
             <!-- Dados da tabela serão preenchidos dinamicamente -->
         </tbody>
     </table>
+
+    <h2>Underperforming Positions</h2>
+    <table id="underperforming-positions-table" border="1">
+        <thead>
+            <tr>
+                <!-- Cabeçalhos da tabela serão preenchidos dinamicamente -->
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Dados da tabela serão preenchidos dinamicamente -->
+        </tbody>
+    </table>
     
     <h2>Player Statistics</h2>
     <div id="player-statistics-container">
@@ -28,6 +40,7 @@
     <script>
         // URLs dos arquivos JSON hospedados no GitHub Pages
         const underperformingJsonUrl = 'https://davidexpcarvalho.github.io/brasil.gg/underperforming_rows.json';
+        const underperformingPositionsJsonUrl = 'https://davidexpcarvalho.github.io/brasil.gg/underperforming_positions_rows.json';
         const playerStatisticsJsonUrl = 'https://davidexpcarvalho.github.io/brasil.gg/player_statistics_rows.json';
 
         // Função para criar a tabela
@@ -110,13 +123,20 @@
             });
         }
 
-        // Buscar e exibir os dados das duas tabelas
+        // Buscar e exibir os dados das tabelas
         fetch(underperformingJsonUrl)
             .then(response => response.json())
             .then(data => {
                 createTable(data, 'underperforming-table');
             })
             .catch(error => console.error('Erro ao buscar dados underperforming:', error));
+
+        fetch(underperformingPositionsJsonUrl)
+            .then(response => response.json())
+            .then(data => {
+                createTable(data, 'underperforming-positions-table');
+            })
+            .catch(error => console.error('Erro ao buscar dados underperforming positions:', error));
 
         fetch(playerStatisticsJsonUrl)
             .then(response => response.json())
