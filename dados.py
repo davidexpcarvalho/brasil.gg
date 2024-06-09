@@ -17,8 +17,8 @@ def excel_to_json(excel_file, json_file):
 if __name__ == "__main__":
     # URLs dos arquivos Excel no GitHub
     excel_urls = [
-        ('https://github.com/davidexpcarvalho/brasil.gg/raw/main/player_statistics_rows.xlsx', 'player_statistics_rows.json'),
-        ('https://github.com/davidexpcarvalho/brasil.gg/raw/main/underperforming_positions_rows.xlsx', 'underperforming_positions_rows.json')
+        ('https://github.com/davidexpcarvalho/brasil.gg/raw/main/player_statistics_rows.csv', 'player_statistics_rows.json'),
+        ('https://github.com/davidexpcarvalho/brasil.gg/raw/main/underperforming_positions_rows.csv', 'underperforming_positions_rows.json')
     ]
     
     for excel_url, json_filename in excel_urls:
