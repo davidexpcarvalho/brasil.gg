@@ -126,12 +126,16 @@ th {
 
 .sortable {
     cursor: pointer;
+    position: relative;
+    padding-right: 20px; /* espaço para a seta */
 }
 
 .sortable:after {
-    content: ' ▲';  /* Código Unicode para seta para cima */
+    content: ' \u25B2';  /* Código Unicode para seta para cima */
+    position: absolute;
+    right: 5px;
 }
 
 .sortable[data-sort-asc='false']:after {
-    content: ' ▼';  /* Código Unicode para seta para baixo */
+    content: ' \u25BC';  /* Código Unicode para seta para baixo */
 }
