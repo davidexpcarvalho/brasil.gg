@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,13 +7,20 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #e6e6e6;
+            color: #333;
         }
-        h1, h2 {
+        h1, h2, h3 {
             text-align: center;
+            color: #006600; /* Verde da bandeira do Brasil */
         }
         .container {
             margin: 20px auto;
             width: 80%;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
         .player-section {
             margin-bottom: 40px;
@@ -22,6 +29,7 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
+            background-color: #fafafa;
         }
         th, td {
             padding: 10px;
@@ -29,7 +37,13 @@
             text-align: left;
         }
         th {
-            background-color: #f4f4f4;
+            background-color: #ffcc00; /* Amarelo da bandeira do Brasil */
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #d9edf7; /* Azul claro para hover */
         }
     </style>
 </head>
@@ -37,12 +51,12 @@
     <h1>Análise dos Jogadores</h1>
     
     <div class="container">
-        <h2>Underperforming Positions</h2>
+        <h2>Posições de Desempenho Inferior</h2>
         <div id="underperforming-positions-container" class="player-section">
             <!-- Dados dos jogadores subdesempenhados serão preenchidos dinamicamente -->
         </div>
         
-        <h2>Player Statistics</h2>
+        <h2>Estatísticas dos Jogadores</h2>
         <div id="player-statistics-container" class="player-section">
             <!-- Dados das estatísticas dos jogadores serão preenchidos dinamicamente -->
         </div>
@@ -108,7 +122,7 @@
                 const headers = ['Posição', 'Campeão', 'Jogos Jogados', 'Vitórias', 'Desempenho'];
                 createGroupedTables(data, 'underperforming-positions-container', headers);
             })
-            .catch(error => console.error('Erro ao buscar dados underperforming positions:', error));
+            .catch(error => console.error('Erro ao buscar dados de posições de desempenho inferior:', error));
 
         fetch(playerStatisticsJsonUrl)
             .then(response => response.json())
@@ -116,7 +130,7 @@
                 const headers = ['Campeão', 'Jogos Jogados', 'Vitórias', 'Taxa de Vitórias'];
                 createGroupedTables(data, 'player-statistics-container', headers);
             })
-            .catch(error => console.error('Erro ao buscar dados player statistics:', error));
+            .catch(error => console.error('Erro ao buscar dados de estatísticas dos jogadores:', error));
     </script>
 </body>
 </html>
