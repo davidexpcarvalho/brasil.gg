@@ -71,7 +71,7 @@
             return response.json();
         }
 
-        function createTableHtml(data, headers) {
+        function createTableHtml(data, headers, fieldMap) {
             if (data.length === 0) {
                 return '<p>Nenhum dado disponível.</p>';
             }
@@ -85,9 +85,9 @@
             data.forEach(row => {
                 tableHtml += '<tr>';
                 headers.forEach(header => {
-                    let key = header.toLowerCase().replace(/\s/g, '_');
-                    let value = row[key] !== undefined ? row[key] : 'N/A';
-                    if (header === 'Taxa de Vitórias' || header === 'Desempenho') {
+                    const field = fieldMap[header];
+                    let value = row[field] !== undefined ? row[field] : 'N/A';
+                    if (field === 'win_rate' || field === 'desempenho') {
                         value = value !== 'N/A' ? `${(value * 100).toFixed(2)}%` : value;
                     }
                     tableHtml += `<td>${value}</td>`;
@@ -146,11 +146,22 @@
                     <h1>Análise do Jogador ${player}</h1>
                     <div class="container">
                         <h2>Estatísticas do Jogador</h2>
-                        ${createTableHtml(playerStats, ['Campeão', 'Jogos Jogados', 'Vitórias', 'Taxa de Vitórias'])}
+                        ${createTableHtml(playerStats, ['Campeão', 'Jogos Jogados', 'Vitórias', 'Taxa de Vitórias'], {
+                            'Campeão': 'champion',
+                            'Jogos Jogados': 'games_played',
+                            'Vitórias': 'wins',
+                            'Taxa de Vitórias': 'win_rate'
+                        })}
                     </div>
                     <div class="container">
                         <h2>Posições de Desempenho Inferior</h2>
-                        ${createTableHtml(playerUnderperforming, ['Posição', 'Campeão', 'Jogos Jogados', 'Vitórias', 'Desempenho'])}
+                        ${createTableHtml(playerUnderperforming, ['Posição', 'Campeão', 'Jogos Jogados', 'Vitórias', 'Desempenho'], {
+                            'Posição': 'position',
+                            'Campeão': 'champion',
+                            'Jogos Jogados': 'games_played',
+                            'Vitórias': 'wins',
+                            'Desempenho': 'performance'
+                        })}
                     </div>
                 `;
                 document.body.appendChild(playerPage);
