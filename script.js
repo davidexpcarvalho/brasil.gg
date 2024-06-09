@@ -18,7 +18,7 @@ function createTableHtml(data, headers, fieldMap, pageSize, currentPage, sortabl
 
     let tableHtml = '<table><thead><tr>';
     headers.forEach(header => {
-        tableHtml += `<th${sortable ? ` class="sortable" onclick="sortTable('${header}')"` : ''}>${header}</th>`;
+        tableHtml += `<th${sortable ? ` class="sortable" onclick="sortTable('${header}', '${currentPage}')"` : ''}>${header}</th>`;
     });
     tableHtml += '</tr></thead><tbody>';
 
@@ -76,7 +76,7 @@ async function createPlayerPages() {
         const dropdown = document.getElementById('dropdown');
 
         allPlayers.forEach(player => {
-            const playerFileName = `player_${player.replace(/[^a-zA-Z0-9]/g, '_')}.html`;
+            const playerFileName = `player_${player.replace(/[^a-zA-Z0-9]/g, '_')}`;
             const playerStats = groupedPlayerStats[player] || [];
             const playerUnderperforming = groupedUnderperformingPositions[player] || [];
 
@@ -169,6 +169,7 @@ function filterPlayers() {
         }
     });
 
+    dropdown.style.display = hasResults ? 'block' : 'none';
     dropdown.setAttribute('aria-expanded', hasResults);
 }
 
@@ -184,9 +185,10 @@ function initializeTablePaginationAndSorting(data, playerFileName, tableId, head
     updateTable(1);
 }
 
-function sortTable(header) {
-    const [playerFileName, tableId] = document.querySelector('.player-page:not([style*="display: none"])').id.split('_');
-    const table = document.getElementById(`${playerFileName}_${tableId}`);
+function sortTable(header, currentPage) {
+    const playerFileName = document.querySelector('.player-page:not([style*="display: none"])').id;
+    const tableId = `${playerFileName}_stats`;
+    const table = document.getElementById(tableId);
     const headers = Array.from(table.querySelectorAll('th')).map(th => th.textContent);
     const index = headers.indexOf(header);
 
@@ -216,6 +218,21 @@ function sortTable(header) {
         });
         tbody.appendChild(row);
     });
+
+    // Atualizar paginação
+    const headersMap = {
+        'Campeão': 'champion',
+        'Jogos Jogados': 'games_played',
+        'Vitórias': 'wins',
+        'Taxa de Vitórias': 'win_rate'
+    };
+    initializeTablePaginationAndSorting(data.map(row => {
+        let obj = {};
+        headers.forEach((header, idx) => {
+            obj[headersMap[header]] = isNaN(row[idx]) ? row[idx] : parseFloat(row[idx]);
+        });
+        return obj;
+    }), playerFileName, 'stats', headers, headersMap, 10);
 }
 
 document.getElementById('search-input').addEventListener('input', filterPlayers);
