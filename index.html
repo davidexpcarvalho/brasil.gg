@@ -14,7 +14,13 @@
         }
         h1 {
             text-align: center;
-            color: #006600; /* Verde da bandeira do Brasil */
+            color: #006600; /* Verde */
+        }
+        h2 {
+            color: #ffcc00; /* Amarelo */
+        }
+        h1, h2, .container, .player-list, #back-button {
+            transition: all 0.3s ease-in-out;
         }
         .container {
             margin: 20px auto;
@@ -83,6 +89,9 @@
         #back-button:hover {
             background-color: #004d00;
         }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -93,10 +102,18 @@
     <div class="container">
         <ul id="player-list" class="player-list"></ul>
     </div>
+    <div id="pagination-container" class="container hidden">
+        <button id="prev-button" onclick="changePage(-1)">Anterior</button>
+        <span id="page-info"></span>
+        <button id="next-button" onclick="changePage(1)">Próximo</button>
+    </div>
 
     <script>
         const playerStatisticsJsonUrl = 'https://davidexpcarvalho.github.io/brasil.gg/player_statistics_rows.json';
         const underperformingPositionsJsonUrl = 'https://davidexpcarvalho.github.io/brasil.gg/underperforming_positions_rows.json';
+        const playersPerPage = 10;
+        let currentPage = 1;
+        let totalPages = 1;
 
         async function fetchJson(url) {
             const response = await fetch(url);
@@ -164,8 +181,12 @@
             ]);
 
             const playerList = document.getElementById('player-list');
+            playerList.innerHTML = ''; // Clear existing list items
 
-            allPlayers.forEach(player => {
+            totalPages = Math.ceil(allPlayers.size / playersPerPage);
+            updatePaginationInfo();
+
+            Array.from(allPlayers).forEach(player => {
                 const playerFileName = `player_${player.replace(/[^a-zA-Z0-9]/g, '_')}.html`;
                 const playerStats = groupedPlayerStats[player] || [];
                 const playerUnderperforming = groupedUnderperformingPositions[player] || [];
@@ -208,14 +229,50 @@
                 a.addEventListener('click', function () {
                     document.querySelectorAll('.player-page').forEach(page => page.style.display = 'none');
                     playerPage.style.display = 'block';
+                    document.getElementById('player-list').parentElement.style.display = 'none';
+                    document.getElementById('search-container').style.display = 'none';
+                    document.getElementById('pagination-container').classList.add('hidden');
                 });
             });
+
+            showPage(currentPage);
+        }
+
+        function showPage(page) {
+            const playerList = document.getElementById('player-list');
+            const players = playerList.querySelectorAll('li');
+            const start = (page - 1) * playersPerPage;
+            const end = start + playersPerPage;
+
+            players.forEach((player, index) => {
+                if (index >= start && index < end) {
+                    player.style.display = 'block';
+                } else {
+                    player.style.display = 'none';
+                }
+            });
+
+            updatePaginationInfo();
+        }
+
+        function changePage(direction) {
+            currentPage += direction;
+            if (currentPage < 1) currentPage = 1;
+            if (currentPage > totalPages) currentPage = totalPages;
+            showPage(currentPage);
+        }
+
+        function updatePaginationInfo() {
+            document.getElementById('page-info').textContent = `Página ${currentPage} de ${totalPages}`;
+            document.getElementById('prev-button').disabled = currentPage === 1;
+            document.getElementById('next-button').disabled = currentPage === totalPages;
         }
 
         function showPlayerList() {
             document.querySelectorAll('.player-page').forEach(page => page.style.display = 'none');
             document.getElementById('player-list').parentElement.style.display = 'block';
             document.getElementById('search-container').style.display = 'block';
+            document.getElementById('pagination-container').classList.remove('hidden');
         }
 
         function filterPlayers() {
@@ -224,7 +281,7 @@
             players.forEach(player => {
                 const playerName = player.textContent.toLowerCase();
                 if (playerName.includes(searchInput)) {
-                    player.style.display = '';
+                    player.style.display = 'block';
                 } else {
                     player.style.display = 'none';
                 }
