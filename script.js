@@ -212,6 +212,11 @@ function sortTable(header, currentPage) {
         return isAscending ? valA - valB : valB - valA;
     });
 
+    // Atualizar setas de ordenação
+    const sortableHeaders = table.querySelectorAll('.sortable');
+    sortableHeaders.forEach(th => th.classList.remove('asc', 'desc'));
+    table.querySelector(`th:nth-child(${index + 1})`).classList.add(isAscending ? 'asc' : 'desc');
+
     table.setAttribute('data-sort-asc', !isAscending);
     const tbody = table.querySelector('tbody');
     tbody.innerHTML = '';
