@@ -86,4 +86,35 @@ th {
     clip: rect(0, 0, 0, 0);
     border: 0;
 }
+.pagination {
+    text-align: center;
+    margin: 20px 0;
+}
+.pagination button {
+    margin: 0 5px;
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    cursor: pointer;
+}
 
+.pagination button.active {
+    background-color: #006600;
+    color: #fff;
+}
+
+.pagination button:hover {
+    background-color: #ddd;
+}
+
+.sortable {
+    cursor: pointer;
+}
+
+.sortable:after {
+    content: ' \u25B2';
+}
+
+.sortable[data-sort-asc='false']:after {
+    content: ' \u25BC';
+}
