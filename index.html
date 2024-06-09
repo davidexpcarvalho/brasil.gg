@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2621969615615907"
+     crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Índice de Jogadores</title>
@@ -12,7 +14,7 @@
         }
         h1 {
             text-align: center;
-            color: #006600; /* Verde da bandeira do Brasil */
+            color: #006600;
         }
         .container {
             margin: 20px auto;
@@ -38,13 +40,25 @@
             text-decoration: underline;
             color: #004d00;
         }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
     </style>
 </head>
 <body>
     <h1>Índice de Jogadores</h1>
     <div class="container">
         <ul id="player-list">
-            <!-- Links para páginas dos jogadores serão preenchidos dinamicamente -->
         </ul>
     </div>
 
@@ -71,9 +85,10 @@
             data.forEach(row => {
                 tableHtml += '<tr>';
                 headers.forEach(header => {
-                    let value = row[header.toLowerCase().replace(/\s/g, '_')];
+                    let key = header.toLowerCase().replace(/\s/g, '_');
+                    let value = row[key] !== undefined ? row[key] : 'N/A';
                     if (header === 'Taxa de Vitórias' || header === 'Desempenho') {
-                        value = `${(value * 100).toFixed(2)}%`;
+                        value = value !== 'N/A' ? `${(value * 100).toFixed(2)}%` : value;
                     }
                     tableHtml += `<td>${value}</td>`;
                 });
@@ -116,7 +131,6 @@
                 const playerStats = groupedPlayerStats[player] || [];
                 const playerUnderperforming = groupedUnderperformingPositions[player] || [];
 
-                // Criar link na página inicial
                 const li = document.createElement('li');
                 const a = document.createElement('a');
                 a.href = `#${playerFileName}`;
@@ -124,9 +138,9 @@
                 li.appendChild(a);
                 playerList.appendChild(li);
 
-                // Criar página do jogador
                 const playerPage = document.createElement('div');
                 playerPage.id = playerFileName;
+                playerPage.classList.add('player-page');
                 playerPage.style.display = 'none';
                 playerPage.innerHTML = `
                     <h1>Análise do Jogador ${player}</h1>
@@ -141,7 +155,6 @@
                 `;
                 document.body.appendChild(playerPage);
 
-                // Adicionar evento de clique para mostrar a página do jogador
                 a.addEventListener('click', function () {
                     document.querySelectorAll('.player-page').forEach(page => page.style.display = 'none');
                     playerPage.style.display = 'block';
