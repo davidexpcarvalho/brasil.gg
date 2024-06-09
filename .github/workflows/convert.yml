@@ -27,7 +27,7 @@ jobs:
 
     - name: Run conversion script
       run: |
-        python convert_excel_to_json.py
+        python dados.py
 
     - name: Commit and push JSON files
       run: |
