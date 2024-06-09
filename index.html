@@ -24,19 +24,26 @@
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        ul {
+        .player-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
             list-style-type: none;
             padding: 0;
         }
-        li {
-            margin: 10px 0;
+        .player-list li {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-align: center;
+            padding: 10px;
         }
-        a {
+        .player-list a {
             text-decoration: none;
             color: #006600;
             font-size: 18px;
         }
-        a:hover {
+        .player-list a:hover {
             text-decoration: underline;
             color: #004d00;
         }
@@ -58,7 +65,7 @@
 <body>
     <h1>Índice de Jogadores</h1>
     <div class="container">
-        <ul id="player-list">
+        <ul id="player-list" class="player-list">
         </ul>
     </div>
 
@@ -155,12 +162,11 @@
                     </div>
                     <div class="container">
                         <h2>Posições de Desempenho Inferior</h2>
-                        ${createTableHtml(playerUnderperforming, ['Posição', 'Campeão', 'Jogos Jogados', 'Vitórias', 'Desempenho'], {
+                        ${createTableHtml(playerUnderperforming, ['Posição', 'Estatística', 'Média do Jogador', 'Média da Posição'], {
                             'Posição': 'position',
-                            'Campeão': 'champion',
-                            'Jogos Jogados': 'games_played',
-                            'Vitórias': 'wins',
-                            'Desempenho': 'performance'
+                            'Estatística': 'stat',
+                            'Média do Jogador': 'player_avg',
+                            'Média da Posição': 'position_avg'
                         })}
                     </div>
                 `;
