@@ -64,7 +64,12 @@ function createPaginationControls(data, pageSize, currentPage, containerId, upda
     }
 
     paginationHtml += '</div>';
-    document.getElementById(containerId).innerHTML = paginationHtml;
+    const container = document.getElementById(containerId);
+    if (container) {
+        container.innerHTML = paginationHtml;
+    } else {
+        console.error(`Container element with id ${containerId} not found`);
+    }
 }
 
 async function createPlayerPages() {
@@ -160,7 +165,12 @@ function showPlayerPage(playerFileName) {
     const playerPage = document.getElementById(playerFileName);
     if (playerPage) {
         playerPage.style.display = 'block';
-        document.getElementById('search-container').style.display = 'none';
+        const searchContainer = document.getElementById('search-container');
+        if (searchContainer) {
+            searchContainer.style.display = 'none';
+        } else {
+            console.error('Search container element not found');
+        }
     } else {
         console.error(`Player page ${playerFileName} not found`);
     }
@@ -172,19 +182,20 @@ function showSearch() {
     if (searchContainer) {
         searchContainer.style.display = 'block';
     } else {
-        console.error('Search container not found');
+        console.error('Search container element not found');
     }
 }
 
 function filterPlayers() {
-    const searchInput = document.getElementById('search-input').value.toLowerCase();
+    const searchInput = document.getElementById('search-input');
     const dropdown = document.getElementById('dropdown');
-    if (dropdown) {
+    if (searchInput && dropdown) {
+        const searchValue = searchInput.value.toLowerCase();
         const dropdownItems = dropdown.querySelectorAll('.dropdown-item');
         let hasResults = false;
 
         dropdownItems.forEach(item => {
-            if (item.textContent.toLowerCase().includes(searchInput)) {
+            if (item.textContent.toLowerCase().includes(searchValue)) {
                 item.style.display = 'block';
                 hasResults = true;
             } else {
@@ -195,7 +206,8 @@ function filterPlayers() {
         dropdown.style.display = hasResults ? 'block' : 'none';
         dropdown.setAttribute('aria-expanded', hasResults);
     } else {
-        console.error('Dropdown element not found');
+        if (!searchInput) console.error('Search input element not found');
+        if (!dropdown) console.error('Dropdown element not found');
     }
 }
 
@@ -280,13 +292,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     document.addEventListener('click', event => {
-        if (!dropdown.contains(event.target) && event.target.id !== 'search-input') {
+        const dropdown = document.getElementById('dropdown');
+        if (dropdown && !dropdown.contains(event.target) && event.target.id !== 'search-input') {
             dropdown.style.display = 'none';
             dropdown.setAttribute('aria-expanded', 'false');
         }
     });
 });
 
+/*
+Comentando o código que tenta buscar dados do servidor local,
+pois não funcionará no GitHub Pages.
 async function fetchGoldEfficiency() {
     try {
         const response = await fetch('http://localhost:5000/items/efficiency');
@@ -309,3 +325,4 @@ async function fetchGoldEfficiency() {
 }
 
 document.addEventListener('DOMContentLoaded', fetchGoldEfficiency);
+*/
