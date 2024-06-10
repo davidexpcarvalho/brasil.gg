@@ -18,29 +18,54 @@ def csv_to_json(csv_file, json_file):
     print(f"Arquivo JSON salvo em {json_file}")
 
 def fetch_items():
-    ITEMS_URL = f'https://ddragon.leagueoflegends.com/cdn/14.11.1/data/pt_BR/item.json'
+    ITEMS_URL = 'https://ddragon.leagueoflegends.com/cdn/14.11.1/data/pt_BR/item.json'
     response = requests.get(ITEMS_URL)
     if response.status_code == 200:
         return response.json()
     else:
         response.raise_for_status()
 
-def calculate_gold_efficiency(item_data):
-    efficiencies = {}
-    for item_id, item in item_data.items():
+def find_cheapest_items(items):
+    cheapest_items = {}
+    
+    for item_id, item in items.items():
         cost = item['gold']['total']
         stats = item.get('stats', {})
-        efficiency = sum(stats.values()) / cost if cost > 0 else 0
-        efficiencies[item_id] = {
-            'name': item['name'],
-            'efficiency': efficiency
-        }
+        
+        for stat, value in stats.items():
+            if value > 0:
+                if stat not in cheapest_items or cost < cheapest_items[stat]['cost']:
+                    cheapest_items[stat] = {'cost': cost, 'value': value}
+    
+    return cheapest_items
+
+def calculate_gold_efficiency(items, cheapest_items):
+    efficiencies = {}
+    
+    for item_id, item in items.items():
+        cost = item['gold']['total']
+        stats = item.get('stats', {})
+        
+        if cost > 0:
+            total_efficiency = 0
+            for stat, value in stats.items():
+                if stat in cheapest_items and cheapest_items[stat]['value'] > 0:
+                    gold_per_point = cheapest_items[stat]['cost'] / cheapest_items[stat]['value']
+                    total_efficiency += value / gold_per_point
+            
+            efficiencies[item_id] = {
+                'name': item['name'],
+                'efficiency': total_efficiency / cost * 100  # percentual de eficiência
+            }
+    
     return efficiencies
 
 @app.route('/items/efficiency', methods=['GET'])
 def get_item_efficiency():
     items_data = fetch_items()
-    efficiencies = calculate_gold_efficiency(items_data['data'])
+    items = items_data['data']
+    cheapest_items = find_cheapest_items(items)
+    efficiencies = calculate_gold_efficiency(items, cheapest_items)
     return jsonify(efficiencies)
 
 if __name__ == "__main__":
