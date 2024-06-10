@@ -272,32 +272,29 @@ function sortTable(header, currentPage) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    createPlayerPages();
-
-    const searchInput = document.getElementById('search-input');
-    if (searchInput) {
-        searchInput.addEventListener('input', filterPlayers);
-    } else {
-        console.error('Search input element not found');
-    }
-
-    const dropdown = document.getElementById('dropdown');
-    if (dropdown) {
-        dropdown.addEventListener('blur', () => {
-            dropdown.style.display = 'none';
-            dropdown.setAttribute('aria-expanded', 'false');
-        });
-    } else {
-        console.error('Dropdown element not found');
-    }
-
-    document.addEventListener('click', event => {
-        const dropdown = document.getElementById('dropdown');
-        if (dropdown && !dropdown.contains(event.target) && event.target.id !== 'search-input') {
-            dropdown.style.display = 'none';
-            dropdown.setAttribute('aria-expanded', 'false');
+    // Função para buscar eficiência de ouro dos itens
+    async function fetchGoldEfficiency() {
+        try {
+            const response = await fetch('https://davidexpcarvalho.github.io/brasil.gg/items_efficiency.json'); // Exemplo de URL de teste
+            if (!response.ok) throw new Error('Failed to fetch gold efficiency data');
+            const data = await response.json();
+            const itemList = document.getElementById('item-list');
+            if (itemList) {
+                for (const itemId in data) {
+                    const item = data[itemId];
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `${item.name}: ${item.efficiency.toFixed(2)}`;
+                    itemList.appendChild(listItem);
+                }
+            } else {
+                console.error('Item list element not found');
+            }
+        } catch (error) {
+            console.error('Erro ao buscar eficiência de ouro:', error);
         }
-    });
+    }
+
+    fetchGoldEfficiency();
 });
 
 /*
