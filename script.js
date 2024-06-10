@@ -20,6 +20,7 @@ function normalizeChampionName(championName) {
 function createChampionImage(championName) {
     const normalizedChampionName = normalizeChampionName(championName);
     const imageUrl = `https://ddragon.leagueoflegends.com/cdn/${dataDragonVersion}/img/champion/${normalizedChampionName}.png`;
+    console.log(`Champion: ${championName}, URL: ${imageUrl}`);  // Adicionado para depuração
     return `<img src="${imageUrl}" alt="${championName}" width="20" height="20" style="vertical-align:middle; margin-right: 8px;">`;
 }
 
