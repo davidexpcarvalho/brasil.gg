@@ -83,59 +83,62 @@ async function createPlayerPages() {
         ]);
 
         const dropdown = document.getElementById('dropdown');
+        if (dropdown) {
+            allPlayers.forEach(player => {
+                const playerFileName = `player_${player.replace(/[^a-zA-Z0-9]/g, '_')}`;
+                const playerStats = groupedPlayerStats[player] || [];
+                const playerUnderperforming = groupedUnderperformingPositions[player] || [];
 
-        allPlayers.forEach(player => {
-            const playerFileName = `player_${player.replace(/[^a-zA-Z0-9]/g, '_')}`;
-            const playerStats = groupedPlayerStats[player] || [];
-            const playerUnderperforming = groupedUnderperformingPositions[player] || [];
+                const playerPage = document.createElement('div');
+                playerPage.id = playerFileName;
+                playerPage.classList.add('player-page');
+                playerPage.style.display = 'none';
+                playerPage.innerHTML = `
+                    <h1>Análise do Jogador ${player}</h1>
+                    <button id="back-button" onclick="showSearch()">Voltar</button>
+                    <div class="container">
+                        <h2>Estatísticas do Jogador</h2>
+                        <div id="${playerFileName}_stats"></div>
+                        <div id="${playerFileName}_stats_pagination"></div>
+                    </div>
+                    <div class="container">
+                        <h2>Pontos Abaixo da Média</h2>
+                        <div id="${playerFileName}_underperforming"></div>
+                        <div id="${playerFileName}_underperforming_pagination"></div>
+                    </div>
+                `;
+                document.body.appendChild(playerPage);
 
-            const playerPage = document.createElement('div');
-            playerPage.id = playerFileName;
-            playerPage.classList.add('player-page');
-            playerPage.style.display = 'none';
-            playerPage.innerHTML = `
-                <h1>Análise do Jogador ${player}</h1>
-                <button id="back-button" onclick="showSearch()">Voltar</button>
-                <div class="container">
-                    <h2>Estatísticas do Jogador</h2>
-                    <div id="${playerFileName}_stats"></div>
-                    <div id="${playerFileName}_stats_pagination"></div>
-                </div>
-                <div class="container">
-                    <h2>Pontos Abaixo da Média</h2>
-                    <div id="${playerFileName}_underperforming"></div>
-                    <div id="${playerFileName}_underperforming_pagination"></div>
-                </div>
-            `;
-            document.body.appendChild(playerPage);
+                const dropdownItem = document.createElement('div');
+                dropdownItem.classList.add('dropdown-item');
+                dropdownItem.textContent = player;
+                dropdownItem.setAttribute('role', 'option');
+                dropdownItem.setAttribute('aria-selected', 'false');
+                dropdownItem.onclick = () => {
+                    showPlayerPage(playerFileName);
+                    document.querySelectorAll('.dropdown-item').forEach(item => item.setAttribute('aria-selected', 'false'));
+                    dropdownItem.setAttribute('aria-selected', 'true');
 
-            const dropdownItem = document.createElement('div');
-            dropdownItem.classList.add('dropdown-item');
-            dropdownItem.textContent = player;
-            dropdownItem.setAttribute('role', 'option');
-            dropdownItem.setAttribute('aria-selected', 'false');
-            dropdownItem.onclick = () => {
-                showPlayerPage(playerFileName);
-                document.querySelectorAll('.dropdown-item').forEach(item => item.setAttribute('aria-selected', 'false'));
-                dropdownItem.setAttribute('aria-selected', 'true');
+                    // Inicializar paginação e ordenação
+                    initializeTablePaginationAndSorting(playerStats, playerFileName, 'stats', ['Campeão', 'Jogos Jogados', 'Vitórias', 'Taxa de Vitórias'], {
+                        'Campeão': 'champion',
+                        'Jogos Jogados': 'games_played',
+                        'Vitórias': 'wins',
+                        'Taxa de Vitórias': 'win_rate'
+                    });
 
-                // Inicializar paginação e ordenação
-                initializeTablePaginationAndSorting(playerStats, playerFileName, 'stats', ['Campeão', 'Jogos Jogados', 'Vitórias', 'Taxa de Vitórias'], {
-                    'Campeão': 'champion',
-                    'Jogos Jogados': 'games_played',
-                    'Vitórias': 'wins',
-                    'Taxa de Vitórias': 'win_rate'
-                });
-
-                initializeTablePaginationAndSorting(playerUnderperforming, playerFileName, 'underperforming', ['Posição', 'Estatística', 'Média do Jogador', 'Média da Posição'], {
-                    'Posição': 'position',
-                    'Estatística': 'stat',
-                    'Média do Jogador': 'player_avg',
-                    'Média da Posição': 'position_avg'
-                }, true);
-            };
-            dropdown.appendChild(dropdownItem);
-        });
+                    initializeTablePaginationAndSorting(playerUnderperforming, playerFileName, 'underperforming', ['Posição', 'Estatística', 'Média do Jogador', 'Média da Posição'], {
+                        'Posição': 'position',
+                        'Estatística': 'stat',
+                        'Média do Jogador': 'player_avg',
+                        'Média da Posição': 'position_avg'
+                    }, true);
+                };
+                dropdown.appendChild(dropdownItem);
+            });
+        } else {
+            console.error('Dropdown element not found');
+        }
     } catch (error) {
         console.error("Error creating player pages:", error);
     }
@@ -154,32 +157,46 @@ function groupBy(array, key) {
 
 function showPlayerPage(playerFileName) {
     document.querySelectorAll('.player-page').forEach(page => page.style.display = 'none');
-    document.getElementById(playerFileName).style.display = 'block';
-    document.getElementById('search-container').style.display = 'none';
+    const playerPage = document.getElementById(playerFileName);
+    if (playerPage) {
+        playerPage.style.display = 'block';
+        document.getElementById('search-container').style.display = 'none';
+    } else {
+        console.error(`Player page ${playerFileName} not found`);
+    }
 }
 
 function showSearch() {
     document.querySelectorAll('.player-page').forEach(page => page.style.display = 'none');
-    document.getElementById('search-container').style.display = 'block';
+    const searchContainer = document.getElementById('search-container');
+    if (searchContainer) {
+        searchContainer.style.display = 'block';
+    } else {
+        console.error('Search container not found');
+    }
 }
 
 function filterPlayers() {
     const searchInput = document.getElementById('search-input').value.toLowerCase();
     const dropdown = document.getElementById('dropdown');
-    const dropdownItems = dropdown.querySelectorAll('.dropdown-item');
-    let hasResults = false;
+    if (dropdown) {
+        const dropdownItems = dropdown.querySelectorAll('.dropdown-item');
+        let hasResults = false;
 
-    dropdownItems.forEach(item => {
-        if (item.textContent.toLowerCase().includes(searchInput)) {
-            item.style.display = 'block';
-            hasResults = true;
-        } else {
-            item.style.display = 'none';
-        }
-    });
+        dropdownItems.forEach(item => {
+            if (item.textContent.toLowerCase().includes(searchInput)) {
+                item.style.display = 'block';
+                hasResults = true;
+            } else {
+                item.style.display = 'none';
+            }
+        });
 
-    dropdown.style.display = hasResults ? 'block' : 'none';
-    dropdown.setAttribute('aria-expanded', hasResults);
+        dropdown.style.display = hasResults ? 'block' : 'none';
+        dropdown.setAttribute('aria-expanded', hasResults);
+    } else {
+        console.error('Dropdown element not found');
+    }
 }
 
 function initializeTablePaginationAndSorting(data, playerFileName, tableId, headers, fieldMap, isUnderperforming = false, pageSize = 10) {
@@ -187,8 +204,13 @@ function initializeTablePaginationAndSorting(data, playerFileName, tableId, head
 
     const updateTable = (page) => {
         currentPage = page;
-        document.getElementById(`${playerFileName}_${tableId}`).innerHTML = createTableHtml(data, headers, fieldMap, pageSize, currentPage, isUnderperforming, true);
-        createPaginationControls(data, pageSize, currentPage, `${playerFileName}_${tableId}_pagination`, updateTable);
+        const tableElement = document.getElementById(`${playerFileName}_${tableId}`);
+        if (tableElement) {
+            tableElement.innerHTML = createTableHtml(data, headers, fieldMap, pageSize, currentPage, isUnderperforming, true);
+            createPaginationControls(data, pageSize, currentPage, `${playerFileName}_${tableId}_pagination`, updateTable);
+        } else {
+            console.error(`Table element ${playerFileName}_${tableId} not found`);
+        }
     };
     
     updateTable(1);
@@ -240,31 +262,46 @@ function sortTable(header, currentPage) {
 document.addEventListener('DOMContentLoaded', () => {
     createPlayerPages();
 
-    document.getElementById('search-input').addEventListener('input', filterPlayers);
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) {
+        searchInput.addEventListener('input', filterPlayers);
+    } else {
+        console.error('Search input element not found');
+    }
 
-    document.getElementById('dropdown').addEventListener('blur', () => {
-        document.getElementById('dropdown').style.display = 'none';
-        document.getElementById('dropdown').setAttribute('aria-expanded', 'false');
-    });
+    const dropdown = document.getElementById('dropdown');
+    if (dropdown) {
+        dropdown.addEventListener('blur', () => {
+            dropdown.style.display = 'none';
+            dropdown.setAttribute('aria-expanded', 'false');
+        });
+    } else {
+        console.error('Dropdown element not found');
+    }
 
     document.addEventListener('click', event => {
-        if (!document.getElementById('dropdown').contains(event.target) && event.target.id !== 'search-input') {
-            document.getElementById('dropdown').style.display = 'none';
-            document.getElementById('dropdown').setAttribute('aria-expanded', 'false');
+        if (!dropdown.contains(event.target) && event.target.id !== 'search-input') {
+            dropdown.style.display = 'none';
+            dropdown.setAttribute('aria-expanded', 'false');
         }
     });
 });
+
 async function fetchGoldEfficiency() {
     try {
         const response = await fetch('http://localhost:5000/items/efficiency');
         if (!response.ok) throw new Error('Failed to fetch gold efficiency data');
         const data = await response.json();
         const itemList = document.getElementById('item-list');
-        for (const itemId in data) {
-            const item = data[itemId];
-            const listItem = document.createElement('li');
-            listItem.textContent = `${item.name}: ${item.efficiency.toFixed(2)}`;
-            itemList.appendChild(listItem);
+        if (itemList) {
+            for (const itemId in data) {
+                const item = data[itemId];
+                const listItem = document.createElement('li');
+                listItem.textContent = `${item.name}: ${item.efficiency.toFixed(2)}`;
+                itemList.appendChild(listItem);
+            }
+        } else {
+            console.error('Item list element not found');
         }
     } catch (error) {
         console.error('Erro ao buscar eficiência de ouro:', error);
