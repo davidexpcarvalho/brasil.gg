@@ -12,16 +12,10 @@ function formatNumber(value) {
     return Number(value).toFixed(1);
 }
 
-function normalizeChampionName(championName) {
-    // Normaliza o nome do campeão para corresponder ao padrão de URLs do DataDragon
-    return championName.replace(/\s/g, '').replace(/[^a-zA-Z0-9]/g, '');
-}
-
 function createChampionImage(championName) {
-    const normalizedChampionName = normalizeChampionName(championName);
-    const imageUrl = `https://ddragon.leagueoflegends.com/cdn/${dataDragonVersion}/img/champion/${normalizedChampionName}.png`;
-    console.log(`Champion: ${championName}, URL: ${imageUrl}`);  // Adicionado para depuração
-    return `<img src="${imageUrl}" alt="${championName}" width="20" height="20" style="vertical-align:middle; margin-right: 8px;">`;
+    // Ajuste para garantir que o nome do campeão esteja no formato esperado
+    const formattedChampionName = championName.charAt(0).toUpperCase() + championName.slice(1).toLowerCase();
+    return `<img src="https://ddragon.leagueoflegends.com/cdn/${dataDragonVersion}/img/champion/${formattedChampionName}.png" alt="${championName}" width="20" height="20" style="vertical-align:middle; margin-right: 8px;">`;
 }
 
 function createTableHtml(data, headers, fieldMap, pageSize, currentPage, sortable = false) {
@@ -90,7 +84,6 @@ async function createPlayerPages() {
         ]);
 
         const dropdown = document.getElementById('dropdown');
-        dropdown.innerHTML = ''; // Clear existing items
 
         allPlayers.forEach(player => {
             const playerFileName = `player_${player.replace(/[^a-zA-Z0-9]/g, '_')}`;
@@ -206,23 +199,54 @@ function sortTable(header, currentPage) {
     const playerFileName = document.querySelector('.player-page:not([style*="display: none"])').id;
     const tableId = `${playerFileName}_stats`;
     const table = document.getElementById(tableId);
-    const rows = Array.from(table.querySelector('tbody').rows);
-    const headerIndex = Array.from(table.querySelectorAll('th')).findIndex(th => th.textContent === header);
-    const isAsc = table.querySelectorAll('th')[headerIndex].dataset.sortAsc === 'true';
+    const headers = Array.from(table.querySelectorAll('th')).map(th => th.textContent);
+    const index = headers.indexOf(header);
 
-    rows.sort((rowA, rowB) => {
-        const cellA = rowA.cells[headerIndex].textContent.trim();
-        const cellB = rowB.cells[headerIndex].textContent.trim();
-
-        if (!isNaN(cellA) && !isNaN(cellB)) {
-            return isAsc ? cellA - cellB : cellB - cellA;
-        }
-        return isAsc ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
+    let data = [];
+    table.querySelectorAll('tbody tr').forEach(row => {
+        const cells = row.querySelectorAll('td');
+        data.push(Array.from(cells).map(cell => cell.textContent));
     });
 
-    table.querySelector('tbody').append(...rows);
-    table.querySelectorAll('th')[headerIndex].dataset.sortAsc = !isAsc;
+    const isAscending = table.querySelector(`th:nth-child(${index + 1})`).getAttribute('data-sort-asc') === 'true';
+
+    data.sort((a, b) => {
+        let valA = a[index];
+        let valB = b[index];
+
+        if (!isNaN(valA) && !isNaN(valB)) {
+            valA = parseFloat(valA);
+            valB = parseFloat(valB);
+        }
+
+        if (valA < valB) return isAscending ? -1 : 1;
+        if (valA > valB) return isAscending ? 1 : -1;
+        return 0;
+    });
+
+    table.querySelectorAll('tbody tr').forEach((row, i) => {
+        Array.from(row.querySelectorAll('td')).forEach((cell, j) => {
+            cell.textContent = data[i][j];
+        });
+    });
+
+    table.querySelector(`th:nth-child(${index + 1})`).setAttribute('data-sort-asc', !isAscending);
 }
 
-// Inicializa a criação das páginas dos jogadores ao carregar a página
-createPlayerPages();
+document.addEventListener('DOMContentLoaded', () => {
+    createPlayerPages();
+
+    document.getElementById('search-input').addEventListener('input', filterPlayers);
+
+    document.getElementById('dropdown').addEventListener('blur', () => {
+        document.getElementById('dropdown').style.display = 'none';
+        document.getElementById('dropdown').setAttribute('aria-expanded', 'false');
+    });
+
+    document.addEventListener('click', event => {
+        if (!document.getElementById('dropdown').contains(event.target) && event.target.id !== 'search-input') {
+            document.getElementById('dropdown').style.display = 'none';
+            document.getElementById('dropdown').setAttribute('aria-expanded', 'false');
+        }
+    });
+});
