@@ -13,12 +13,11 @@ function formatNumber(value) {
 }
 
 function createChampionImage(championName) {
-    // Ajuste para garantir que o nome do campeão esteja no formato esperado
     const formattedChampionName = championName.charAt(0).toUpperCase() + championName.slice(1).toLowerCase();
     return `<img src="https://ddragon.leagueoflegends.com/cdn/${dataDragonVersion}/img/champion/${formattedChampionName}.png" alt="${championName}" width="20" height="20" style="vertical-align:middle; margin-right: 8px;">`;
 }
 
-function createTableHtml(data, headers, fieldMap, pageSize, currentPage, sortable = false) {
+function createTableHtml(data, headers, fieldMap, pageSize, currentPage, isUnderperforming = false, sortable = false) {
     if (data.length === 0) {
         return '<p>Nenhum dado disponível.</p>';
     }
@@ -39,10 +38,10 @@ function createTableHtml(data, headers, fieldMap, pageSize, currentPage, sortabl
             const field = fieldMap[header];
             let value = row[field] !== undefined ? row[field] : 'N/A';
             if (typeof value === 'number') {
-                value = formatNumber(value);
+                value = isUnderperforming ? formatNumber(value) : value;
             }
-            if (field === 'win_rate' || field === 'desempenho') {
-                value = value !== 'N/A' ? `${formatNumber(value * 100)}%` : value;
+            if (field === 'win_rate') {
+                value = value !== 'N/A' ? `${(value * 100).toFixed(2)}%` : value;
             }
             if (field === 'champion') {
                 value = createChampionImage(value) + value;
@@ -103,7 +102,7 @@ async function createPlayerPages() {
                     <div id="${playerFileName}_stats_pagination"></div>
                 </div>
                 <div class="container">
-                    <h2>Posições de Desempenho Inferior</h2>
+                    <h2>Pontos Abaixo da Média</h2>
                     <div id="${playerFileName}_underperforming"></div>
                     <div id="${playerFileName}_underperforming_pagination"></div>
                 </div>
@@ -133,7 +132,7 @@ async function createPlayerPages() {
                     'Estatística': 'stat',
                     'Média do Jogador': 'player_avg',
                     'Média da Posição': 'position_avg'
-                });
+                }, true);
             };
             dropdown.appendChild(dropdownItem);
         });
@@ -183,12 +182,12 @@ function filterPlayers() {
     dropdown.setAttribute('aria-expanded', hasResults);
 }
 
-function initializeTablePaginationAndSorting(data, playerFileName, tableId, headers, fieldMap, pageSize = 10) {
+function initializeTablePaginationAndSorting(data, playerFileName, tableId, headers, fieldMap, isUnderperforming = false, pageSize = 10) {
     let currentPage = 1;
 
     const updateTable = (page) => {
         currentPage = page;
-        document.getElementById(`${playerFileName}_${tableId}`).innerHTML = createTableHtml(data, headers, fieldMap, pageSize, currentPage, true);
+        document.getElementById(`${playerFileName}_${tableId}`).innerHTML = createTableHtml(data, headers, fieldMap, pageSize, currentPage, isUnderperforming, true);
         createPaginationControls(data, pageSize, currentPage, `${playerFileName}_${tableId}_pagination`, updateTable);
     };
     
@@ -197,17 +196,22 @@ function initializeTablePaginationAndSorting(data, playerFileName, tableId, head
 
 function sortTable(header, currentPage) {
     const playerFileName = document.querySelector('.player-page:not([style*="display: none"])').id;
-    const tableId = `${playerFileName}_stats`;
-    const table = document.getElementById(tableId);
-    const headers = Array.from(table.querySelectorAll('th')).map(th => th.textContent);
+    const tableId = header.includes('Posição') ? 'underperforming' : 'stats';
+    const headers = tableId === 'underperforming' ? ['Posição', 'Estatística', 'Média do Jogador', 'Média da Posição'] : ['Campeão', 'Jogos Jogados', 'Vitórias', 'Taxa de Vitórias'];
+    const fieldMap = tableId === 'underperforming' ? {
+        'Posição': 'position',
+        'Estatística': 'stat',
+        'Média do Jogador': 'player_avg',
+        'Média da Posição': 'position_avg'
+    } : {
+        'Campeão': 'champion',
+        'Jogos Jogados': 'games_played',
+        'Vitórias': 'wins',
+        'Taxa de Vitórias': 'win_rate'
+    };
+
+    const table = document.getElementById(`${playerFileName}_${tableId}`).querySelector('table');
     const index = headers.indexOf(header);
-
-    let data = [];
-    table.querySelectorAll('tbody tr').forEach(row => {
-        const cells = row.querySelectorAll('td');
-        data.push(Array.from(cells).map(cell => cell.textContent));
-    });
-
     const isAscending = table.querySelector(`th:nth-child(${index + 1})`).getAttribute('data-sort-asc') === 'true';
 
     data.sort((a, b) => {
