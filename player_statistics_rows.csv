@@ -3,8 +3,8 @@ CDB Pirata#CDB,Smolder,13,8,0.615384615384615
 CDB Pirata#CDB,Sona,8,4,0.5
 CDB Pirata#CDB,Leona,6,5,0.833333333333333
 CDB Pirata#CDB,Yorick,5,4,0.8
+CDB Pirata#CDB,Amumu,5,4,0.8
 CDB Pirata#CDB,Morgana,5,2,0.4
-CDB Pirata#CDB,Amumu,4,3,0.75
 CDB Pirata#CDB,Maokai,4,1,0.25
 CDB Pirata#CDB,Zyra,4,1,0.25
 CDB Pirata#CDB,Lux,3,0,0
@@ -17,10 +17,11 @@ CDB Pirata#CDB,Ashe,2,1,0.5
 CDB Pirata#CDB,Ezreal,2,1,0.5
 CDB Pirata#CDB,Seraphine,2,1,0.5
 CDB Pirata#CDB,Vi,2,0,0
+CDB Pirata#CDB,Nami,2,2,1
 CDB Pirata#CDB,JarvanIV,2,0,0
 CDB Pirata#CDB,Malphite,2,1,0.5
 CDB Pirata#CDB,DrMundo,1,0,0
-CDB Pirata#CDB,Mordekaiser,1,0,0
+CDB Pirata#CDB,Braum,1,0,0
 CDB Pirata#CDB,Brand,1,1,1
 CDB Pirata#CDB,Lulu,1,0,0
 CDB Pirata#CDB,Karma,1,0,0
@@ -31,8 +32,8 @@ CDB Pirata#CDB,Varus,1,0,0
 CDB Pirata#CDB,TahmKench,1,0,0
 CDB Pirata#CDB,Hecarim,1,1,1
 CDB Pirata#CDB,MissFortune,1,1,1
-CDB Pirata#CDB,Braum,1,0,0
 CDB Pirata#CDB,Nautilus,1,0,0
+CDB Pirata#CDB,Mordekaiser,1,0,0
 CDB Pirata#CDB,Jhin,1,0,0
 CDB Pirata#CDB,Rakan,1,0,0
 CDB Pirata#CDB,Taliyah,1,1,1
@@ -42,7 +43,6 @@ CDB Pirata#CDB,Janna,1,0,0
 CDB Pirata#CDB,Malzahar,1,0,0
 CDB Pirata#CDB,MasterYi,1,1,1
 CDB Pirata#CDB,Gragas,1,0,0
-CDB Pirata#CDB,Nami,1,1,1
 CDB Pirata#CDB,Tristana,1,0,0
 CDB Pirata#CDB,Twitch,1,0,0
 CDB Pirata#CDB,Caitlyn,1,0,0
@@ -53,8 +53,8 @@ CDB Santera#BR08,Amumu,10,6,0.6
 CDB Santera#BR08,Poppy,6,4,0.666666666666667
 CDB Santera#BR08,MasterYi,6,3,0.5
 CDB Santera#BR08,Maokai,5,4,0.8
+CDB Santera#BR08,Skarner,4,2,0.5
 CDB Santera#BR08,Vi,4,1,0.25
-CDB Santera#BR08,Skarner,3,1,0.333333333333333
 CDB Santera#BR08,Mordekaiser,3,1,0.333333333333333
 CDB Santera#BR08,Darius,2,0,0
 CDB Santera#BR08,Warwick,2,2,1
@@ -211,76 +211,79 @@ FPXmilkyway#UEL,Hwei,1,0,0
 FPXmilkyway#UEL,Belveth,1,0,0
 FPXmilkyway#UEL,Gwen,1,0,0
 FPXmilkyway#UEL,Alistar,1,0,0
-GTG avaSt#BR1,Bard,13,7,0.538461538461538
-GTG avaSt#BR1,Nautilus,13,5,0.384615384615385
+GTG avaSt#BR1,Nautilus,15,5,0.333333333333333
+GTG avaSt#BR1,Bard,14,7,0.5
 GTG avaSt#BR1,Milio,10,3,0.3
-GTG avaSt#BR1,Leona,9,4,0.444444444444444
+GTG avaSt#BR1,Leona,10,5,0.5
 GTG avaSt#BR1,Galio,9,5,0.555555555555556
 GTG avaSt#BR1,Alistar,8,5,0.625
 GTG avaSt#BR1,Blitzcrank,6,5,0.833333333333333
+GTG avaSt#BR1,Pantheon,5,2,0.4
+GTG avaSt#BR1,Xerath,5,2,0.4
+GTG avaSt#BR1,Lux,5,2,0.4
 GTG avaSt#BR1,Morgana,5,2,0.4
 GTG avaSt#BR1,Poppy,5,3,0.6
 GTG avaSt#BR1,Taric,5,3,0.6
-GTG avaSt#BR1,Xerath,5,2,0.4
-GTG avaSt#BR1,Lux,5,2,0.4
-GTG avaSt#BR1,Thresh,4,0,0
 GTG avaSt#BR1,Seraphine,4,2,0.5
-GTG avaSt#BR1,Pantheon,4,2,0.5
+GTG avaSt#BR1,Skarner,4,1,0.25
+GTG avaSt#BR1,Thresh,4,0,0
 GTG avaSt#BR1,Yuumi,3,1,0.333333333333333
-GTG avaSt#BR1,Skarner,3,1,0.333333333333333
 GTG avaSt#BR1,KSante,3,0,0
-GTG avaSt#BR1,Ziggs,2,1,0.5
+GTG avaSt#BR1,Sylas,2,1,0.5
 GTG avaSt#BR1,Karma,2,0,0
-GTG avaSt#BR1,Senna,1,1,1
-GTG avaSt#BR1,Rakan,1,0,0
-GTG avaSt#BR1,Sylas,1,0,0
-GTG avaSt#BR1,Sejuani,1,0,0
-GTG avaSt#BR1,Rumble,1,0,0
-GTG avaSt#BR1,TahmKench,1,1,1
+GTG avaSt#BR1,Rell,2,1,0.5
+GTG avaSt#BR1,Ziggs,2,1,0.5
 GTG avaSt#BR1,Ashe,1,1,1
 GTG avaSt#BR1,Braum,1,1,1
 GTG avaSt#BR1,Shen,1,0,0
+GTG avaSt#BR1,TahmKench,1,1,1
 GTG avaSt#BR1,Trundle,1,0,0
+GTG avaSt#BR1,Rakan,1,0,0
 GTG avaSt#BR1,Pyke,1,1,1
-GTG avaSt#BR1,Rell,1,1,1
+GTG avaSt#BR1,Senna,1,1,1
+GTG avaSt#BR1,Sejuani,1,0,0
+GTG avaSt#BR1,Rumble,1,0,0
 Hariiken1#2525,KSante,12,7,0.583333333333333
 Hariiken1#2525,Camille,9,7,0.777777777777778
 Hariiken1#2525,LeeSin,8,4,0.5
+Hariiken1#2525,Yasuo,6,2,0.333333333333333
 Hariiken1#2525,Hwei,6,3,0.5
-Hariiken1#2525,Yasuo,5,1,0.2
 Hariiken1#2525,Jhin,5,3,0.6
-Hariiken1#2525,TwistedFate,4,2,0.5
 Hariiken1#2525,Pyke,4,2,0.5
+Hariiken1#2525,TwistedFate,4,2,0.5
 Hariiken1#2525,Nautilus,4,2,0.5
 Hariiken1#2525,Aatrox,4,2,0.5
-Hariiken1#2525,Jax,3,2,0.666666666666667
 Hariiken1#2525,Gragas,3,0,0
 Hariiken1#2525,Ornn,3,0,0
 Hariiken1#2525,TahmKench,3,2,0.666666666666667
-Hariiken1#2525,Viktor,2,1,0.5
-Hariiken1#2525,Viego,2,0,0
+Hariiken1#2525,Taliyah,3,2,0.666666666666667
+Hariiken1#2525,Jax,3,2,0.666666666666667
 Hariiken1#2525,Skarner,2,1,0.5
+Hariiken1#2525,Draven,2,2,1
+Hariiken1#2525,Viktor,2,1,0.5
+Hariiken1#2525,Ashe,2,1,0.5
+Hariiken1#2525,Viego,2,0,0
 Hariiken1#2525,Brand,2,1,0.5
 Hariiken1#2525,Varus,2,1,0.5
 Hariiken1#2525,Azir,2,0,0
-Hariiken1#2525,Taliyah,2,2,1
-Hariiken1#2525,Draven,2,2,1
-Hariiken1#2525,Kayn,1,1,1
-Hariiken1#2525,Aphelios,1,0,0
-Hariiken1#2525,Lucian,1,0,0
-Hariiken1#2525,Nami,1,1,1
-Hariiken1#2525,Urgot,1,1,1
 Hariiken1#2525,XinZhao,1,0,0
+Hariiken1#2525,Galio,1,1,1
+Hariiken1#2525,Volibear,1,0,0
+Hariiken1#2525,Akshan,1,0,0
+Hariiken1#2525,Kassadin,1,1,1
+Hariiken1#2525,Nami,1,1,1
+Hariiken1#2525,Lucian,1,0,0
+Hariiken1#2525,Kayn,1,1,1
+Hariiken1#2525,Akali,1,1,1
+Hariiken1#2525,Aphelios,1,0,0
+Hariiken1#2525,Tristana,1,0,0
+Hariiken1#2525,Urgot,1,1,1
+Hariiken1#2525,Nidalee,1,1,1
 Hariiken1#2525,Elise,1,1,1
 Hariiken1#2525,Kaisa,1,1,1
-Hariiken1#2525,Poppy,1,0,0
-Hariiken1#2525,Ashe,1,1,1
-Hariiken1#2525,Tristana,1,0,0
 Hariiken1#2525,Karthus,1,1,1
-Hariiken1#2525,Nidalee,1,1,1
-Hariiken1#2525,Akali,1,1,1
-Hariiken1#2525,Galio,1,1,1
-Hariiken1#2525,Kassadin,1,1,1
+Hariiken1#2525,Poppy,1,0,0
+Hariiken1#2525,Rakan,1,1,1
 IGN Bandeclays#br2,KSante,7,4,0.571428571428571
 IGN Bandeclays#br2,Zed,7,4,0.571428571428571
 IGN Bandeclays#br2,Aatrox,6,3,0.5
@@ -337,34 +340,35 @@ IGN Hubnir#Pedro,Lucian,8,6,0.75
 IGN Hubnir#Pedro,Jhin,7,4,0.571428571428571
 IGN Hubnir#Pedro,Hwei,6,5,0.833333333333333
 IGN Hubnir#Pedro,Camille,6,3,0.5
-IGN Hubnir#Pedro,Jinx,4,1,0.25
 IGN Hubnir#Pedro,Varus,4,3,0.75
-IGN Hubnir#Pedro,Aatrox,3,0,0
-IGN Hubnir#Pedro,Ezreal,3,2,0.666666666666667
-IGN Hubnir#Pedro,Kalista,3,2,0.666666666666667
-IGN Hubnir#Pedro,Brand,3,3,1
+IGN Hubnir#Pedro,Jinx,4,1,0.25
 IGN Hubnir#Pedro,Ahri,3,1,0.333333333333333
+IGN Hubnir#Pedro,Brand,3,3,1
+IGN Hubnir#Pedro,Ezreal,3,2,0.666666666666667
 IGN Hubnir#Pedro,DrMundo,3,2,0.666666666666667
+IGN Hubnir#Pedro,Aatrox,3,0,0
+IGN Hubnir#Pedro,Kalista,3,2,0.666666666666667
 IGN Hubnir#Pedro,Sion,2,1,0.5
 IGN Hubnir#Pedro,Xayah,2,1,0.5
 IGN Hubnir#Pedro,Draven,2,1,0.5
-IGN Hubnir#Pedro,Gragas,2,2,1
 IGN Hubnir#Pedro,Trundle,2,1,0.5
 IGN Hubnir#Pedro,Lillia,2,2,1
 IGN Hubnir#Pedro,Corki,2,0,0
 IGN Hubnir#Pedro,Fiora,2,2,1
+IGN Hubnir#Pedro,Gragas,2,2,1
 IGN Hubnir#Pedro,Twitch,1,1,1
 IGN Hubnir#Pedro,LeeSin,1,1,1
+IGN Hubnir#Pedro,Ashe,1,1,1
 IGN Hubnir#Pedro,Kindred,1,0,0
 IGN Hubnir#Pedro,Poppy,1,0,0
 IGN Hubnir#Pedro,Senna,1,0,0
-IGN Hubnir#Pedro,Sivir,1,1,1
 IGN Hubnir#Pedro,XinZhao,1,0,0
 IGN Hubnir#Pedro,Skarner,1,1,1
 IGN Hubnir#Pedro,Kayn,1,1,1
+IGN Hubnir#Pedro,Sivir,1,1,1
 IGN Hubnir#Pedro,Mordekaiser,1,1,1
 IGN Hubnir#Pedro,Zeri,1,1,1
-IGN Hubnir#Pedro,Ashe,1,1,1
+IGN Hubnir#Pedro,Zyra,1,1,1
 IGN Iron#JANNA,Nami,19,12,0.631578947368421
 IGN Iron#JANNA,Hwei,15,8,0.533333333333333
 IGN Iron#JANNA,Janna,8,5,0.625
@@ -478,15 +482,15 @@ IGN Jota Pê#Jota1,Vayne,1,0,0
 IGN Jota Pê#Jota1,Aphelios,1,1,1
 IGN Jota Pê#Jota1,Taric,1,0,0
 IGN Jota Pê#Jota1,Sylas,1,0,0
-IGN Khalas#BR2,Nautilus,15,7,0.466666666666667
+IGN Khalas#BR2,Nautilus,16,8,0.5
 IGN Khalas#BR2,Thresh,13,8,0.615384615384615
 IGN Khalas#BR2,Rakan,11,5,0.454545454545455
 IGN Khalas#BR2,Milio,10,7,0.7
 IGN Khalas#BR2,Braum,7,1,0.142857142857143
-IGN Khalas#BR2,Rell,5,5,1
+IGN Khalas#BR2,Rell,6,6,1
 IGN Khalas#BR2,Alistar,5,4,0.8
+IGN Khalas#BR2,Karma,5,2,0.4
 IGN Khalas#BR2,Nami,4,2,0.5
-IGN Khalas#BR2,Karma,4,1,0.25
 IGN Khalas#BR2,Lux,2,2,1
 IGN Khalas#BR2,Bard,1,1,1
 IGN Khalas#BR2,Brand,1,1,1
@@ -494,9 +498,9 @@ IGN Khalas#BR2,Zed,1,1,1
 IGN Khalas#BR2,Janna,1,1,1
 IGN Khalas#BR2,Galio,1,0,0
 IGN Khalas#BR2,Leona,1,0,0
-IGN Provelser#RQL,Taliyah,20,10,0.5
-IGN Provelser#RQL,Sylas,15,6,0.4
-IGN Provelser#RQL,Akali,12,6,0.5
+IGN Provelser#RQL,Taliyah,21,11,0.523809523809524
+IGN Provelser#RQL,Sylas,16,7,0.4375
+IGN Provelser#RQL,Akali,13,6,0.461538461538462
 IGN Provelser#RQL,Tristana,11,5,0.454545454545455
 IGN Provelser#RQL,Hwei,11,8,0.727272727272727
 IGN Provelser#RQL,Lissandra,6,1,0.166666666666667
@@ -556,45 +560,46 @@ Linkover#0001,Jhin,10,7,0.7
 Linkover#0001,Zeri,7,1,0.142857142857143
 Linkover#0001,Syndra,6,2,0.333333333333333
 Linkover#0001,Lucian,6,4,0.666666666666667
-Linkover#0001,Azir,3,2,0.666666666666667
 Linkover#0001,Xayah,3,2,0.666666666666667
-Linkover#0001,TwistedFate,2,2,1
-Linkover#0001,Ornn,2,1,0.5
+Linkover#0001,Azir,3,2,0.666666666666667
 Linkover#0001,Samira,2,1,0.5
+Linkover#0001,Jinx,2,1,0.5
+Linkover#0001,TwistedFate,2,2,1
+Linkover#0001,Draven,2,1,0.5
 Linkover#0001,Illaoi,2,2,1
 Linkover#0001,Nilah,2,1,0.5
-Linkover#0001,Draven,2,1,0.5
-Linkover#0001,Jinx,2,1,0.5
-Linkover#0001,Kennen,1,1,1
+Linkover#0001,Ornn,2,1,0.5
 Linkover#0001,Ahri,1,0,0
+Linkover#0001,Kennen,1,1,1
 Linkover#0001,Seraphine,1,1,1
 Linkover#0001,Vi,1,0,0
 Linkover#0001,Malphite,1,1,1
 Linkover#0001,Ezreal,1,0,0
-Linkover#0001,Corki,1,0,0
-Linkover#0001,Briar,1,0,0
+Linkover#0001,Alistar,1,0,0
 Linkover#0001,Belveth,1,1,1
 Linkover#0001,Volibear,1,1,1
 Linkover#0001,Leblanc,1,0,0
 Linkover#0001,Naafiri,1,0,0
-Linkover#0001,Alistar,1,0,0
-Linkover#0001,MonkeyKing,1,0,0
-Linkover#0001,Annie,1,0,0
-Linkover#0001,Zyra,1,1,1
-Linkover#0001,Khazix,1,1,1
-Linkover#0001,Veigar,1,1,1
-Linkover#0001,Caitlyn,1,1,1
-Linkover#0001,Ashe,1,1,1
-Linkover#0001,Leona,1,0,0
-Linkover#0001,Heimerdinger,1,1,1
-Linkover#0001,Senna,1,1,1
-Linkover#0001,Pyke,1,0,0
-Linkover#0001,Urgot,1,1,1
-Linkover#0001,Gragas,1,1,1
-Linkover#0001,Yuumi,1,0,0
-Linkover#0001,Jayce,1,1,1
-Linkover#0001,Varus,1,0,0
 Linkover#0001,Orianna,1,0,0
+Linkover#0001,Briar,1,0,0
+Linkover#0001,MonkeyKing,1,0,0
+Linkover#0001,Corki,1,0,0
+Linkover#0001,Senna,1,1,1
+Linkover#0001,Varus,1,0,0
+Linkover#0001,Jayce,1,1,1
+Linkover#0001,Yuumi,1,0,0
+Linkover#0001,Gragas,1,1,1
+Linkover#0001,Urgot,1,1,1
+Linkover#0001,Pyke,1,0,0
+Linkover#0001,Heimerdinger,1,1,1
+Linkover#0001,Annie,1,0,0
+Linkover#0001,Leona,1,0,0
+Linkover#0001,Ashe,1,1,1
+Linkover#0001,Caitlyn,1,1,1
+Linkover#0001,Veigar,1,1,1
+Linkover#0001,Khazix,1,1,1
+Linkover#0001,Zyra,1,1,1
+Linkover#0001,Ziggs,1,1,1
 MaragaT0 #NKZ,Varus,20,15,0.75
 MaragaT0 #NKZ,Kalista,19,10,0.526315789473684
 MaragaT0 #NKZ,Aphelios,12,4,0.333333333333333
@@ -647,21 +652,21 @@ MisaAmane#112,Orianna,1,0,0
 MisaAmane#112,Ezreal,1,1,1
 MisaAmane#112,Skarner,1,0,0
 MisaAmane#112,Veigar,1,1,1
-Mooylol#Tsu,Rell,20,8,0.4
+Mooylol#Tsu,Rell,22,8,0.363636363636364
 Mooylol#Tsu,Rakan,13,5,0.384615384615385
+Mooylol#Tsu,Nami,7,4,0.571428571428571
 Mooylol#Tsu,Leona,6,4,0.666666666666667
-Mooylol#Tsu,Nami,6,4,0.666666666666667
 Mooylol#Tsu,Seraphine,5,4,0.8
 Mooylol#Tsu,Soraka,5,3,0.6
-Mooylol#Tsu,Milio,4,1,0.25
+Mooylol#Tsu,Milio,5,2,0.4
 Mooylol#Tsu,Senna,2,0,0
 Mooylol#Tsu,Maokai,2,0,0
 Mooylol#Tsu,Shen,2,1,0.5
 Mooylol#Tsu,Karma,2,1,0.5
+Mooylol#Tsu,Lulu,2,1,0.5
 Mooylol#Tsu,Lux,1,0,0
 Mooylol#Tsu,Alistar,1,0,0
 Mooylol#Tsu,Renata,1,0,0
-Mooylol#Tsu,Lulu,1,0,0
 Mooylol#Tsu,Ziggs,1,0,0
 Mooylol#Tsu,TahmKench,1,0,0
 Mrblue3d#Blue3,Aatrox,13,8,0.615384615384615
@@ -765,12 +770,12 @@ Quackzin#QUCK,Jhin,1,0,0
 Quackzin#QUCK,Leona,1,0,0
 Quackzin#QUCK,Olaf,1,1,1
 Quackzin#QUCK,Nasus,1,0,0
-TILTO#ORTIZ,Blitzcrank,23,16,0.695652173913043
+TILTO#ORTIZ,Blitzcrank,26,18,0.692307692307692
 TILTO#ORTIZ,Neeko,21,9,0.428571428571429
 TILTO#ORTIZ,Nautilus,7,2,0.285714285714286
 TILTO#ORTIZ,Thresh,6,3,0.5
+TILTO#ORTIZ,Pyke,5,3,0.6
 TILTO#ORTIZ,Karma,5,3,0.6
-TILTO#ORTIZ,Pyke,4,3,0.75
 TILTO#ORTIZ,Milio,3,0,0
 TILTO#ORTIZ,Kayle,2,2,1
 TILTO#ORTIZ,Yuumi,2,1,0.5
@@ -796,8 +801,8 @@ YellowThunder#NKZ,Sett,14,8,0.571428571428571
 YellowThunder#NKZ,KSante,11,8,0.727272727272727
 YellowThunder#NKZ,Shen,10,6,0.6
 YellowThunder#NKZ,Sylas,10,7,0.7
+YellowThunder#NKZ,Jax,5,2,0.4
 YellowThunder#NKZ,Vayne,5,4,0.8
-YellowThunder#NKZ,Jax,4,2,0.5
 YellowThunder#NKZ,TwistedFate,4,3,0.75
 YellowThunder#NKZ,Renekton,4,1,0.25
 YellowThunder#NKZ,Yasuo,4,1,0.25
