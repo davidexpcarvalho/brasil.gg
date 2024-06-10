@@ -90,6 +90,7 @@ async function createPlayerPages() {
         ]);
 
         const dropdown = document.getElementById('dropdown');
+        dropdown.innerHTML = ''; // Clear existing items
 
         allPlayers.forEach(player => {
             const playerFileName = `player_${player.replace(/[^a-zA-Z0-9]/g, '_')}`;
@@ -223,4 +224,5 @@ function sortTable(header, currentPage) {
     table.querySelectorAll('th')[headerIndex].dataset.sortAsc = !isAsc;
 }
 
+// Inicializa a criação das páginas dos jogadores ao carregar a página
 createPlayerPages();
