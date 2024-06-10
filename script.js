@@ -13,7 +13,8 @@ function formatNumber(value) {
 }
 
 function createChampionImage(championName) {
-    return `<img src="https://ddragon.leagueoflegends.com/cdn/${dataDragonVersion}/img/champion/${championName}.png" alt="${championName}" width="20" height="20" style="vertical-align:middle; margin-right: 8px;">`;
+    const formattedName = championName.replace(/[^a-zA-Z0-9]/g, '').replace(/([A-Z])/g, letter => `_${letter.toLowerCase()}`).replace(/^_/, '');
+    return `<img src="https://ddragon.leagueoflegends.com/cdn/${dataDragonVersion}/img/champion/${formattedName}.png" alt="${championName}" width="20" height="20" style="vertical-align:middle; margin-right: 8px;">`;
 }
 
 function createTableHtml(data, headers, fieldMap, pageSize, currentPage, sortable = false) {
