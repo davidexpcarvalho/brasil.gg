@@ -295,31 +295,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     fetchGoldEfficiency();
+
+    createPlayerPages(); // Certifique-se de que essa função seja chamada após o DOM estar pronto
 });
-
-/*
-Comentando o código que tenta buscar dados do servidor local,
-pois não funcionará no GitHub Pages.
-async function fetchGoldEfficiency() {
-    try {
-        const response = await fetch('http://localhost:5000/items/efficiency');
-        if (!response.ok) throw new Error('Failed to fetch gold efficiency data');
-        const data = await response.json();
-        const itemList = document.getElementById('item-list');
-        if (itemList) {
-            for (const itemId in data) {
-                const item = data[itemId];
-                const listItem = document.createElement('li');
-                listItem.textContent = `${item.name}: ${item.efficiency.toFixed(2)}`;
-                itemList.appendChild(listItem);
-            }
-        } else {
-            console.error('Item list element not found');
-        }
-    } catch (error) {
-        console.error('Erro ao buscar eficiência de ouro:', error);
-    }
-}
-
-document.addEventListener('DOMContentLoaded', fetchGoldEfficiency);
-*/
