@@ -8,21 +8,6 @@ import requests
 
 app = Flask(__name__)
 
-# Tabela de eficiência de ouro por atributo
-gold_efficiency = {
-    "FlatPhysicalDamageMod": 36,       # g/AD
-    "FlatMagicDamageMod": 21.75,       # g/AP
-    "FlatArmorMod": 20,                # g/Armor
-    "FlatSpellBlockMod": 20,           # g/MR
-    "FlatHPPoolMod": 2.66,             # g/HP
-    "FlatMPPoolMod": 2,                # g/MP
-    "FlatHPRegenMod": 36,              # g/HP5
-    "FlatMPRegenMod": 60,              # g/MP5
-    "PercentCritChanceMod": 50,        # g/CSC%
-    "PercentAttackSpeedMod": 33.33,    # g/AS%
-    "PercentMovementSpeedMod": 13      # g/MS
-}
-
 # Função assíncrona para baixar CSVs do GitHub
 async def download_csv_from_github(session, url):
     async with session.get(url) as response:
@@ -60,40 +45,13 @@ def fetch_items():
     else:
         response.raise_for_status()
 
-def find_cheapest_items(items):
-    cheapest_items = {}
-    for item_id, item in items.items():
-        cost = item['gold']['total']
-        stats = item.get('stats', {})
-        for stat, value in stats.items():
-            if value > 0:
-                if stat not in cheapest_items or cost < cheapest_items[stat]['cost']:
-                    cheapest_items[stat] = {'cost': cost, 'value': value}
-    return cheapest_items
-
-def calculate_gold_efficiency(items):
-    efficiencies = {}
-    for item_id, item in items.items():
-        cost = item['gold']['total']
-        stats = item.get('stats', {})
-        if cost > 0:
-            total_efficiency = 0
-            for stat, value in stats.items():
-                if stat in gold_efficiency and gold_efficiency[stat] > 0:
-                    gold_per_point = gold_efficiency[stat]
-                    total_efficiency += value * gold_per_point
-            efficiencies[item_id] = {
-                'name': item['name'],
-                'efficiency': total_efficiency / cost * 100  # percentual de eficiência
-            }
-    return efficiencies
-
-@app.route('/items/efficiency', methods=['GET'])
-def get_item_efficiency():
+# Rota de exemplo para verificação de funcionamento
+@app.route('/items/example', methods=['GET'])
+def get_example_items():
     items_data = fetch_items()
     items = items_data['data']
-    efficiencies = calculate_gold_efficiency(items)
-    return jsonify(efficiencies)
+    example_items = {item_id: items[item_id]['name'] for item_id in list(items.keys())[:10]}
+    return jsonify(example_items)
 
 if __name__ == "__main__":
     # URLs dos arquivos CSV no GitHub
