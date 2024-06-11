@@ -1,145 +1,32 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #e6e6e6;
-    color: #333;
-}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brasil.gg</title>
+    <link rel="stylesheet" href="styles.css">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2621969615615907" crossorigin="anonymous"></script>
+</head>
+<body>
+    <header>
+        <h1>Brasil.gg</h1>
+    </header>
 
-h1 {
-    text-align: center;
-    color: #006600; /* Verde da bandeira do Brasil */
-}
+    <div class="container">
+        <div id="search-container">
+            <input type="text" id="search-input" placeholder="Buscar jogador..." aria-label="Buscar jogador">
+            <div id="dropdown"></div>
+        </div>
 
-h2 {
-    color: #ffcc00; /* Amarelo da bandeira do Brasil */
-}
+        <main>
+            <a href="gold_efficiency.html">Ver Eficiência de Ouro dos Itens</a>
+        </main>
+    </div>
 
-.container {
-    margin: 20px auto;
-    width: 80%;
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
+    <footer>
+        &copy; 2024 Brasil.gg. Todos os direitos reservados.
+    </footer>
 
-#search-container {
-    text-align: center;
-    margin: 20px;
-}
-
-#search-input {
-    padding: 10px;
-    width: 80%;
-    font-size: 16px;
-}
-
-#dropdown {
-    position: absolute;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    max-height: 200px;
-    overflow-y: auto;
-    width: calc(80% - 22px);
-    left: 10%;
-    display: none;
-    z-index: 1;
-}
-
-.dropdown-item {
-    padding: 10px;
-    cursor: pointer;
-}
-
-.dropdown-item:hover {
-    background-color: #f2f2f2;
-}
-
-.hidden {
-    display: none;
-}
-
-#back-button {
-    display: block;
-    margin: 20px auto;
-    padding: 10px 20px;
-    background-color: #006600;
-    color: #fff;
-    text-align: center;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-#back-button:hover {
-    background-color: #004d00;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-}
-
-th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: center;
-}
-
-th {
-    background-color: #f2f2f2;
-}
-
-.visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: -1px;
-    padding: 0;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    border: 0;
-}
-
-.pagination {
-    text-align: center;
-    margin: 20px 0;
-}
-
-.pagination button {
-    margin: 0 5px;
-    padding: 5px 10px;
-    border: 1px solid #ddd;
-    background-color: #fff;
-    cursor: pointer;
-}
-
-.pagination button.active {
-    background-color: #006600;
-    color: #fff;
-}
-
-.pagination button:hover {
-    background-color: #ddd;
-}
-
-.sortable {
-    cursor: pointer;
-    position: relative;
-    padding-right: 20px; /* espaço para a seta */
-}
-
-.sortable:after {
-    content: '';
-    position: absolute;
-    right: 5px;
-}
-
-.sortable.asc:after {
-    content: '▲';
-}
-
-.sortable.desc:after {
-    content: '▼';
-}
+    <script src="script.js"></script>
+</body>
+</html>
