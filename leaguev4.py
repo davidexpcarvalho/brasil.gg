@@ -17,6 +17,11 @@ DB_PORT = os.getenv('DB_PORT')
 DB_NAME = os.getenv('DB_NAME')
 RIOT_API_KEY = os.getenv('RIOT_API_KEY')
 
+# Verificar se as variáveis de ambiente estão definidas
+if not all([DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME, RIOT_API_KEY]):
+    logging.error("Uma ou mais variáveis de ambiente não estão definidas.")
+    raise EnvironmentError("Verifique as variáveis de ambiente.")
+
 # Conectar ao banco de dados
 def connect_db():
     logging.info("Conectando ao banco de dados...")
@@ -151,15 +156,22 @@ def update_players_data(conn, api_response):
 # Função para obter dados da API com controle de taxa de requisições
 def get_league_data(url):
     logging.info(f"Fazendo requisição para {url}")
-    response = requests.get(url)
-    response.raise_for_status()
-    time.sleep(1)  # Aguardar 1 segundo entre as requisições
-    return response.json()['entries']
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        time.sleep(1)  # Aguardar 1 segundo entre as requisições
+        return response.json().get('entries', [])
+    except requests.exceptions.HTTPError as http_err:
+        logging.error(f"Erro HTTP ao fazer requisição para {url}: {http_err}")
+    except requests.exceptions.RequestException as err:
+        logging.error(f"Erro ao fazer requisição para {url}: {err}")
+    return []
 
 # Função principal
 def main():
-    conn = connect_db()
+    conn = None
     try:
+        conn = connect_db()
         if not check_table_exists(conn):
             create_table(conn)
         print_table_structure(conn)
@@ -189,7 +201,8 @@ def main():
     except Exception as e:
         logging.error(f"Ocorreu um erro: {e}")
     finally:
-        conn.close()
+        if conn:
+            conn.close()
 
 if __name__ == "__main__":
     main()
