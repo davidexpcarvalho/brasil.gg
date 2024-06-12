@@ -2,22 +2,22 @@ import os
 import requests
 import pandas as pd
 import time
-import psycopg2
-from psycopg2 import sql
+import mysql.connector
+from mysql.connector import Error
 import json
 
 def connect_to_db(retries=5, delay=5):
     for attempt in range(retries):
         try:
-            connection = psycopg2.connect(
+            connection = mysql.connector.connect(
                 user=os.getenv("DB_USER"),
                 password=os.getenv("DB_PASSWORD"),
                 host=os.getenv("DB_HOST"),
                 port=os.getenv("DB_PORT"),
-                dbname=os.getenv("DB_NAME")
+                database=os.getenv("DB_NAME")
             )
             return connection
-        except psycopg2.OperationalError as e:
+        except Error as e:
             if attempt < retries - 1:
                 print(f"Connection failed. Retrying in {delay} seconds...")
                 time.sleep(delay)
@@ -291,7 +291,7 @@ def add_missing_columns(connection, details):
 
     for key in details[0].keys():
         if key not in existing_columns:
-            alter_table_query = sql.SQL("ALTER TABLE match_details ADD COLUMN {} VARCHAR(50);").format(sql.Identifier(key))
+            alter_table_query = f"ALTER TABLE match_details ADD COLUMN {key} VARCHAR(50);"
             cursor.execute(alter_table_query)
             connection.commit()
 
@@ -349,16 +349,11 @@ def save_progress_to_db(connection, match_details):
     add_missing_columns(connection, match_details)
 
     for detail in match_details:
-        insert_query = sql.SQL("""
-        INSERT INTO match_details ({})
-        VALUES ({})
-        ON CONFLICT (match_id) DO NOTHING;
-        """).format(
-            sql.SQL(', ').join(map(sql.Identifier, detail.keys())),
-            sql.SQL(', ').join(sql.Placeholder() * len(detail))
-        )
+        placeholders = ', '.join(['%s'] * len(detail))
+        columns = ', '.join(detail.keys())
+        insert_query = f"INSERT INTO match_details ({columns}) VALUES ({placeholders}) ON DUPLICATE KEY UPDATE {', '.join([f'{col}=VALUES({col})' for col in detail.keys()])};"
         cursor.execute(insert_query, list(detail.values()))
-    
+
     connection.commit()
     cursor.close()
 
@@ -382,7 +377,7 @@ for var in required_env_vars:
     if not os.getenv(var):
         raise EnvironmentError(f"A variável de ambiente {var} não está definida")
 
-# Conectar ao banco de dados Supabase
+# Conectar ao banco de dados MySQL
 connection = connect_to_db()
 
 # Criar a tabela se não existir
