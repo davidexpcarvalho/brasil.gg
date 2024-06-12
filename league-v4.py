@@ -3,6 +3,11 @@ import mysql.connector
 import json
 import os
 import time
+import logging
+
+# Configurar o logging
+logging.basicConfig(filename='league_script.log', level=logging.DEBUG, 
+                    format='%(asctime)s %(levelname)s %(message)s')
 
 # Configurar variáveis de ambiente
 DB_USER = os.getenv('DB_USER')
@@ -14,7 +19,7 @@ RIOT_API_KEY = os.getenv('RIOT_API_KEY')
 
 # Conectar ao banco de dados
 def connect_db():
-    print("Conectando ao banco de dados...")
+    logging.info("Conectando ao banco de dados...")
     return mysql.connector.connect(
         user=DB_USER,
         password=DB_PASSWORD,
@@ -25,7 +30,7 @@ def connect_db():
 
 # Verificar se a tabela 'players' existe
 def check_table_exists(conn):
-    print("Verificando se a tabela 'players' existe...")
+    logging.info("Verificando se a tabela 'players' existe...")
     cursor = conn.cursor()
     cursor.execute("""
         SELECT COUNT(*)
@@ -38,7 +43,7 @@ def check_table_exists(conn):
 
 # Criar a tabela 'players' se não existir
 def create_table(conn):
-    print("Criando a tabela 'players'...")
+    logging.info("Criando a tabela 'players'...")
     cursor = conn.cursor()
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS players (
@@ -55,11 +60,11 @@ def create_table(conn):
     """)
     conn.commit()
     cursor.close()
-    print("Tabela 'players' criada com sucesso.")
+    logging.info("Tabela 'players' criada com sucesso.")
 
 # Imprimir estrutura da tabela
 def print_table_structure(conn):
-    print("Imprimindo estrutura da tabela 'players'...")
+    logging.info("Imprimindo estrutura da tabela 'players'...")
     cursor = conn.cursor()
     cursor.execute("""
         SELECT column_name, data_type
@@ -68,13 +73,13 @@ def print_table_structure(conn):
     """, (DB_NAME,))
     columns = cursor.fetchall()
     cursor.close()
-    print("Estrutura da tabela 'players':")
+    logging.info("Estrutura da tabela 'players':")
     for column in columns:
-        print(f"{column[0]}: {column[1]}")
+        logging.info(f"{column[0]}: {column[1]}")
 
 # Atualizar estrutura da tabela
 def update_table_structure(conn, api_response):
-    print("Atualizando estrutura da tabela 'players'...")
+    logging.info("Atualizando estrutura da tabela 'players'...")
     existing_columns = set()
     cursor = conn.cursor()
     cursor.execute("""
@@ -88,21 +93,21 @@ def update_table_structure(conn, api_response):
     # Adicionar novas colunas
     for column in api_columns - existing_columns:
         cursor.execute(f"ALTER TABLE players ADD COLUMN {column} VARCHAR(255);")
-        print(f"Coluna '{column}' adicionada.")
+        logging.info(f"Coluna '{column}' adicionada.")
     
     # Remover colunas que não existem mais na API
     for column in existing_columns - api_columns:
         if column != "summonerId":  # Não remover a coluna chave primária
             cursor.execute(f"ALTER TABLE players DROP COLUMN {column};")
-            print(f"Coluna '{column}' removida.")
+            logging.info(f"Coluna '{column}' removida.")
     
     conn.commit()
     cursor.close()
-    print("Estrutura da tabela 'players' atualizada.")
+    logging.info("Estrutura da tabela 'players' atualizada.")
 
 # Atualizar dados dos jogadores
 def update_players_data(conn, api_response):
-    print("Atualizando dados dos jogadores...")
+    logging.info("Atualizando dados dos jogadores...")
     cursor = conn.cursor()
     
     # Obter todos os summonerIds existentes
@@ -126,10 +131,65 @@ def update_players_data(conn, api_response):
                 hotStreak = %(hotStreak)s
                 WHERE summonerId = %(summonerId)s;
             """, player)
-            print(f"Jogador {player['summonerId']} atualizado.")
+            logging.info(f"Jogador {player['summonerId']} atualizado.")
         else:
             cursor.execute("""
                 INSERT INTO players (summonerId, leaguePoints, rank, wins, losses, veteran, inactive, freshBlood, hotStreak)
                 VALUES (%(summonerId)s, %(leaguePoints)s, %(rank)s, %(wins)s, %(losses)s, %(veteran)s, %(inactive)s, %(freshBlood)s, %(hotStreak)s);
             """, player)
-            print(f"Jogador {player['summonerId']} inserido.")
+            logging.info(f"Jogador {player['summonerId']} inserido.")
+    
+    # Remover registros que não estão mais na API
+    for summonerId in existing_ids - api_ids:
+        cursor.execute("DELETE FROM players WHERE summonerId = %s;", (summonerId,))
+        logging.info(f"Jogador {summonerId} removido.")
+    
+    conn.commit()
+    cursor.close()
+    logging.info("Dados dos jogadores atualizados.")
+
+# Função para obter dados da API com controle de taxa de requisições
+def get_league_data(url):
+    logging.info(f"Fazendo requisição para {url}")
+    response = requests.get(url)
+    response.raise_for_status()
+    time.sleep(1)  # Aguardar 1 segundo entre as requisições
+    return response.json()['entries']
+
+# Função principal
+def main():
+    conn = connect_db()
+    try:
+        if not check_table_exists(conn):
+            create_table(conn)
+        print_table_structure(conn)
+
+        all_players = []
+        queues = ["RANKED_SOLO_5x5"]
+        tiers = ["CHALLENGER", "GRANDMASTER", "MASTER"]
+        divisions = ["I", "II", "III", "IV"]
+        
+        # Obter dados dos Challenger, Grandmaster e Master
+        for tier in tiers:
+            for queue in queues:
+                url = f"https://br1.api.riotgames.com/lol/league/v4/{tier.lower()}leagues/by-queue/{queue}?api_key={RIOT_API_KEY}"
+                all_players.extend(get_league_data(url))
+        
+        # Obter dados das outras divisões
+        for queue in queues:
+            for tier in ["DIAMOND", "PLATINUM", "GOLD", "SILVER", "BRONZE", "IRON"]:
+                for division in divisions:
+                    url = f"https://br1.api.riotgames.com/lol/league/v4/entries/{queue}/{tier}/{division}?api_key={RIOT_API_KEY}"
+                    all_players.extend(get_league_data(url))
+        
+        # Atualizar a estrutura da tabela e os dados
+        if all_players:
+            update_table_structure(conn, all_players)
+            update_players_data(conn, all_players)
+    except Exception as e:
+        logging.error(f"Ocorreu um erro: {e}")
+    finally:
+        conn.close()
+
+if __name__ == "__main__":
+    main()
