@@ -29,6 +29,7 @@ jobs:
 
     - name: Run conversion script
       run: |
+        python analise.py
         python dados.py
 
     - name: Commit and push JSON files
