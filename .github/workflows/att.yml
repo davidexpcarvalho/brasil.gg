@@ -6,28 +6,42 @@ on:
   push:
     branches:
       - main
+
 permissions:
   contents: write
 
 jobs:
-  convert:
+  update-database:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v2
 
     - name: Set up Python
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v2
       with:
         python-version: '3.10'
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pandas requests flask aiohttp asyncio mysql.connector logging
+        pip install pandas requests flask aiohttp asyncio mysql-connector-python
 
-    - name: Run conversion script
+    - name: Check environment variables
+      run: |
+        if [ -z "${{ secrets.DB_USER }}" ]; then echo "DB_USER is not set"; exit 1; fi
+        if [ -z "${{ secrets.DB_PASSWORD }}" ]; then echo "DB_PASSWORD is not set"; exit 1; fi
+        if [ -z "${{ secrets.DB_HOST }}" ]; then echo "DB_HOST is not set"; exit 1; fi
+        if [ -z "${{ secrets.DB_PORT }}" ]; then echo "DB_PORT is not set"; exit 1; fi
+        if [ -z "${{ secrets.DB_NAME }}" ]; then echo "DB_NAME is not set"; exit 1; fi
+        if [ -z "${{ secrets.RIOT_API_KEY }}" ]; then echo "RIOT_API_KEY is not set"; exit 1; fi
+
+    - name: Create log directory if it does not exist
+      run: |
+        mkdir -p logs
+
+    - name: Run update script
       run: |
         python leaguev4.py
       env:
