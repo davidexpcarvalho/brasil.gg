@@ -14,6 +14,7 @@ RIOT_API_KEY = os.getenv('RIOT_API_KEY')
 
 # Conectar ao banco de dados
 def connect_db():
+    print("Conectando ao banco de dados...")
     return mysql.connector.connect(
         user=DB_USER,
         password=DB_PASSWORD,
@@ -24,6 +25,7 @@ def connect_db():
 
 # Verificar se a tabela 'players' existe
 def check_table_exists(conn):
+    print("Verificando se a tabela 'players' existe...")
     cursor = conn.cursor()
     cursor.execute("""
         SELECT COUNT(*)
@@ -36,6 +38,7 @@ def check_table_exists(conn):
 
 # Criar a tabela 'players' se não existir
 def create_table(conn):
+    print("Criando a tabela 'players'...")
     cursor = conn.cursor()
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS players (
@@ -56,6 +59,7 @@ def create_table(conn):
 
 # Imprimir estrutura da tabela
 def print_table_structure(conn):
+    print("Imprimindo estrutura da tabela 'players'...")
     cursor = conn.cursor()
     cursor.execute("""
         SELECT column_name, data_type
@@ -70,6 +74,7 @@ def print_table_structure(conn):
 
 # Atualizar estrutura da tabela
 def update_table_structure(conn, api_response):
+    print("Atualizando estrutura da tabela 'players'...")
     existing_columns = set()
     cursor = conn.cursor()
     cursor.execute("""
@@ -93,9 +98,11 @@ def update_table_structure(conn, api_response):
     
     conn.commit()
     cursor.close()
+    print("Estrutura da tabela 'players' atualizada.")
 
 # Atualizar dados dos jogadores
 def update_players_data(conn, api_response):
+    print("Atualizando dados dos jogadores...")
     cursor = conn.cursor()
     
     # Obter todos os summonerIds existentes
@@ -126,56 +133,3 @@ def update_players_data(conn, api_response):
                 VALUES (%(summonerId)s, %(leaguePoints)s, %(rank)s, %(wins)s, %(losses)s, %(veteran)s, %(inactive)s, %(freshBlood)s, %(hotStreak)s);
             """, player)
             print(f"Jogador {player['summonerId']} inserido.")
-    
-    # Remover registros que não estão mais na API
-    for summonerId in existing_ids - api_ids:
-        cursor.execute("DELETE FROM players WHERE summonerId = %s;", (summonerId,))
-        print(f"Jogador {summonerId} removido.")
-    
-    conn.commit()
-    cursor.close()
-
-# Função para obter dados da API com controle de taxa de requisições
-def get_league_data(url):
-    response = requests.get(url)
-    response.raise_for_status()
-    time.sleep(1)  # Aguardar 1 segundo entre as requisições
-    return response.json()['entries']
-
-# Função principal
-def main():
-    conn = connect_db()
-    try:
-        if not check_table_exists(conn):
-            create_table(conn)
-        print_table_structure(conn)
-
-        all_players = []
-        queues = ["RANKED_SOLO_5x5"]
-        tiers = ["CHALLENGER", "GRANDMASTER", "MASTER"]
-        divisions = ["I", "II", "III", "IV"]
-        
-        # Obter dados dos Challenger, Grandmaster e Master
-        for tier in tiers:
-            for queue in queues:
-                url = f"https://br1.api.riotgames.com/lol/league/v4/{tier.lower()}leagues/by-queue/{queue}?api_key={RIOT_API_KEY}"
-                all_players.extend(get_league_data(url))
-        
-        # Obter dados das outras divisões
-        for queue in queues:
-            for tier in ["DIAMOND", "PLATINUM", "GOLD", "SILVER", "BRONZE", "IRON"]:
-                for division in divisions:
-                    url = f"https://br1.api.riotgames.com/lol/league/v4/entries/{queue}/{tier}/{division}?api_key={RIOT_API_KEY}"
-                    all_players.extend(get_league_data(url))
-        
-        # Atualizar a estrutura da tabela e os dados
-        if all_players:
-            update_table_structure(conn, all_players)
-            update_players_data(conn, all_players)
-    except Exception as e:
-        print(f"Ocorreu um erro: {e}")
-    finally:
-        conn.close()
-
-if __name__ == "__main__":
-    main()
