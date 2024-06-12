@@ -51,6 +51,7 @@ def create_table(conn):
     """)
     conn.commit()
     cursor.close()
+    print("Tabela 'players' criada com sucesso.")
 
 # Atualizar estrutura da tabela
 def update_table_structure(conn, api_response):
@@ -67,10 +68,12 @@ def update_table_structure(conn, api_response):
     # Adicionar novas colunas
     for column in api_columns - existing_columns:
         cursor.execute(f"ALTER TABLE players ADD COLUMN {column} VARCHAR(255);")
+        print(f"Coluna '{column}' adicionada.")
     
     # Remover colunas que não existem mais na API
     for column in existing_columns - api_columns:
         cursor.execute(f"ALTER TABLE players DROP COLUMN {column};")
+        print(f"Coluna '{column}' removida.")
     
     conn.commit()
     cursor.close()
@@ -100,15 +103,18 @@ def update_players_data(conn, api_response):
                 hot_streak = %(hotStreak)s
                 WHERE summoner_id = %(summonerId)s;
             """, player)
+            print(f"Jogador {player['summonerId']} atualizado.")
         else:
             cursor.execute("""
                 INSERT INTO players (summoner_id, league_points, rank, wins, losses, veteran, inactive, fresh_blood, hot_streak)
                 VALUES (%(summonerId)s, %(leaguePoints)s, %(rank)s, %(wins)s, %(losses)s, %(veteran)s, %(inactive)s, %(freshBlood)s, %(hotStreak)s);
             """, player)
+            print(f"Jogador {player['summonerId']} inserido.")
     
     # Remover registros que não estão mais na API
     for summoner_id in existing_ids - api_ids:
         cursor.execute("DELETE FROM players WHERE summoner_id = %s;", (summoner_id,))
+        print(f"Jogador {summoner_id} removido.")
     
     conn.commit()
     cursor.close()
