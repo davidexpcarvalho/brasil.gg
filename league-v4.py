@@ -27,8 +27,8 @@ def check_table_exists(conn):
     cursor.execute("""
         SELECT COUNT(*)
         FROM information_schema.tables 
-        WHERE table_name = 'players';
-    """)
+        WHERE table_schema = %s AND table_name = 'players';
+    """, (DB_NAME,))
     exists = cursor.fetchone()[0] == 1
     cursor.close()
     return exists
@@ -37,7 +37,7 @@ def check_table_exists(conn):
 def create_table(conn):
     cursor = conn.cursor()
     cursor.execute("""
-        CREATE TABLE players (
+        CREATE TABLE IF NOT EXISTS players (
             summoner_id VARCHAR(255) PRIMARY KEY,
             league_points INT,
             rank VARCHAR(10),
@@ -132,6 +132,8 @@ def main():
         
         update_table_structure(conn, api_response)
         update_players_data(conn, api_response)
+    except Exception as e:
+        print(f"Ocorreu um erro: {e}")
     finally:
         conn.close()
 
