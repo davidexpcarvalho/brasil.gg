@@ -1,4 +1,4 @@
-name: Convert Excel to JSON
+name: Atualizar Base de Dados
 
 on:
   schedule:
@@ -25,7 +25,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pandas requests flask aiohttp asyncio mysql.connector
+        pip install pandas requests flask aiohttp asyncio mysql.connector logging
 
     - name: Run conversion script
       run: |
