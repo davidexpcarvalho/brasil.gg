@@ -2,6 +2,7 @@ import requests
 import mysql.connector
 import json
 import os
+import time
 
 # Configurar variáveis de ambiente
 DB_USER = os.getenv('DB_USER')
@@ -134,6 +135,13 @@ def update_players_data(conn, api_response):
     conn.commit()
     cursor.close()
 
+# Função para obter dados da API com controle de taxa de requisições
+def get_league_data(url):
+    response = requests.get(url)
+    response.raise_for_status()
+    time.sleep(1)  # Aguardar 1 segundo entre as requisições
+    return response.json()['entries']
+
 # Função principal
 def main():
     conn = connect_db()
@@ -141,14 +149,29 @@ def main():
         if not check_table_exists(conn):
             create_table(conn)
         print_table_structure(conn)
+
+        all_players = []
+        queues = ["RANKED_SOLO_5x5"]
+        tiers = ["CHALLENGER", "GRANDMASTER", "MASTER"]
+        divisions = ["I", "II", "III", "IV"]
         
-        # Fazer requisição à API da Riot
-        response = requests.get(f"https://br1.api.riotgames.com/lol/league/v4/challengerleagues/by-queue/RANKED_SOLO_5x5?api_key={RIOT_API_KEY}")
-        response.raise_for_status()  # Levantar erro se a requisição falhar
-        api_response = response.json()['entries']
+        # Obter dados dos Challenger, Grandmaster e Master
+        for tier in tiers:
+            for queue in queues:
+                url = f"https://br1.api.riotgames.com/lol/league/v4/{tier.lower()}leagues/by-queue/{queue}?api_key={RIOT_API_KEY}"
+                all_players.extend(get_league_data(url))
         
-        update_table_structure(conn, api_response)
-        update_players_data(conn, api_response)
+        # Obter dados das outras divisões
+        for queue in queues:
+            for tier in ["DIAMOND", "PLATINUM", "GOLD", "SILVER", "BRONZE", "IRON"]:
+                for division in divisions:
+                    url = f"https://br1.api.riotgames.com/lol/league/v4/entries/{queue}/{tier}/{division}?api_key={RIOT_API_KEY}"
+                    all_players.extend(get_league_data(url))
+        
+        # Atualizar a estrutura da tabela e os dados
+        if all_players:
+            update_table_structure(conn, all_players)
+            update_players_data(conn, all_players)
     except Exception as e:
         print(f"Ocorreu um erro: {e}")
     finally:
