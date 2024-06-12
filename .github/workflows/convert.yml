@@ -29,8 +29,7 @@ jobs:
 
     - name: Run conversion script
       run: |
-        python analise.py
-        python dados.py
+        python league-v4.py
       env:
         DB_USER: ${{ secrets.DB_USER }}
         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
