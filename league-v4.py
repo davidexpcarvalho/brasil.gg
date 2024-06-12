@@ -38,15 +38,15 @@ def create_table(conn):
     cursor = conn.cursor()
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS players (
-            summoner_id VARCHAR(255) PRIMARY KEY,
-            league_points INT,
+            summonerId VARCHAR(255) PRIMARY KEY,
+            leaguePoints INT,
             rank VARCHAR(10),
             wins INT,
             losses INT,
             veteran BOOLEAN,
             inactive BOOLEAN,
-            fresh_blood BOOLEAN,
-            hot_streak BOOLEAN
+            freshBlood BOOLEAN,
+            hotStreak BOOLEAN
         );
     """)
     conn.commit()
@@ -86,7 +86,7 @@ def update_table_structure(conn, api_response):
     
     # Remover colunas que não existem mais na API
     for column in existing_columns - api_columns:
-        if column != "summoner_id":  # Não remover a coluna chave primária
+        if column != "summonerId":  # Não remover a coluna chave primária
             cursor.execute(f"ALTER TABLE players DROP COLUMN {column};")
             print(f"Coluna '{column}' removida.")
     
@@ -97,50 +97,39 @@ def update_table_structure(conn, api_response):
 def update_players_data(conn, api_response):
     cursor = conn.cursor()
     
-    # Obter todos os summoner_ids existentes
-    cursor.execute("SELECT summoner_id FROM players;")
+    # Obter todos os summonerIds existentes
+    cursor.execute("SELECT summonerId FROM players;")
     existing_ids = set(row[0] for row in cursor.fetchall())
     
     api_ids = set(player['summonerId'] for player in api_response)
     
     # Inserir ou atualizar registros
     for player in api_response:
-        player_data = {
-            'summonerId': player['summonerId'],
-            'leaguePoints': player['leaguePoints'],
-            'rank': player['rank'],
-            'wins': player['wins'],
-            'losses': player['losses'],
-            'veteran': player['veteran'],
-            'inactive': player['inactive'],
-            'freshBlood': player['freshBlood'],
-            'hotStreak': player['hotStreak']
-        }
         if player['summonerId'] in existing_ids:
             cursor.execute("""
                 UPDATE players SET
-                league_points = %(leaguePoints)s,
+                leaguePoints = %(leaguePoints)s,
                 rank = %(rank)s,
                 wins = %(wins)s,
                 losses = %(losses)s,
                 veteran = %(veteran)s,
                 inactive = %(inactive)s,
-                fresh_blood = %(freshBlood)s,
-                hot_streak = %(hotStreak)s
-                WHERE summoner_id = %(summonerId)s;
-            """, player_data)
+                freshBlood = %(freshBlood)s,
+                hotStreak = %(hotStreak)s
+                WHERE summonerId = %(summonerId)s;
+            """, player)
             print(f"Jogador {player['summonerId']} atualizado.")
         else:
             cursor.execute("""
-                INSERT INTO players (summoner_id, league_points, rank, wins, losses, veteran, inactive, fresh_blood, hot_streak)
+                INSERT INTO players (summonerId, leaguePoints, rank, wins, losses, veteran, inactive, freshBlood, hotStreak)
                 VALUES (%(summonerId)s, %(leaguePoints)s, %(rank)s, %(wins)s, %(losses)s, %(veteran)s, %(inactive)s, %(freshBlood)s, %(hotStreak)s);
-            """, player_data)
+            """, player)
             print(f"Jogador {player['summonerId']} inserido.")
     
     # Remover registros que não estão mais na API
-    for summoner_id in existing_ids - api_ids:
-        cursor.execute("DELETE FROM players WHERE summoner_id = %s;", (summoner_id,))
-        print(f"Jogador {summoner_id} removido.")
+    for summonerId in existing_ids - api_ids:
+        cursor.execute("DELETE FROM players WHERE summonerId = %s;", (summonerId,))
+        print(f"Jogador {summonerId} removido.")
     
     conn.commit()
     cursor.close()
