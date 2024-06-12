@@ -59,8 +59,8 @@ def update_table_structure(conn, api_response):
     cursor = conn.cursor()
     cursor.execute("""
         SELECT column_name FROM information_schema.columns 
-        WHERE table_name = 'players';
-    """)
+        WHERE table_schema = %s AND table_name = 'players';
+    """, (DB_NAME,))
     existing_columns = set(row[0] for row in cursor.fetchall())
     
     api_columns = set(api_response[0].keys())
@@ -72,8 +72,9 @@ def update_table_structure(conn, api_response):
     
     # Remover colunas que não existem mais na API
     for column in existing_columns - api_columns:
-        cursor.execute(f"ALTER TABLE players DROP COLUMN {column};")
-        print(f"Coluna '{column}' removida.")
+        if column != "summoner_id":  # Não remover a coluna chave primária
+            cursor.execute(f"ALTER TABLE players DROP COLUMN {column};")
+            print(f"Coluna '{column}' removida.")
     
     conn.commit()
     cursor.close()
@@ -90,6 +91,17 @@ def update_players_data(conn, api_response):
     
     # Inserir ou atualizar registros
     for player in api_response:
+        player_data = {
+            'summonerId': player['summonerId'],
+            'leaguePoints': player['leaguePoints'],
+            'rank': player['rank'],
+            'wins': player['wins'],
+            'losses': player['losses'],
+            'veteran': player['veteran'],
+            'inactive': player['inactive'],
+            'freshBlood': player['freshBlood'],
+            'hotStreak': player['hotStreak']
+        }
         if player['summonerId'] in existing_ids:
             cursor.execute("""
                 UPDATE players SET
@@ -102,13 +114,13 @@ def update_players_data(conn, api_response):
                 fresh_blood = %(freshBlood)s,
                 hot_streak = %(hotStreak)s
                 WHERE summoner_id = %(summonerId)s;
-            """, player)
+            """, player_data)
             print(f"Jogador {player['summonerId']} atualizado.")
         else:
             cursor.execute("""
                 INSERT INTO players (summoner_id, league_points, rank, wins, losses, veteran, inactive, fresh_blood, hot_streak)
                 VALUES (%(summonerId)s, %(leaguePoints)s, %(rank)s, %(wins)s, %(losses)s, %(veteran)s, %(inactive)s, %(freshBlood)s, %(hotStreak)s);
-            """, player)
+            """, player_data)
             print(f"Jogador {player['summonerId']} inserido.")
     
     # Remover registros que não estão mais na API
@@ -128,6 +140,7 @@ def main():
         
         # Fazer requisição à API da Riot
         response = requests.get(f"https://br1.api.riotgames.com/lol/league/v4/challengerleagues/by-queue/RANKED_SOLO_5x5?api_key={RIOT_API_KEY}")
+        response.raise_for_status()  # Levantar erro se a requisição falhar
         api_response = response.json()['entries']
         
         update_table_structure(conn, api_response)
