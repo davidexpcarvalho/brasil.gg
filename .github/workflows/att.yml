@@ -43,7 +43,8 @@ jobs:
 
     - name: Run update script
       run: |
-        python leaguev4.py
+        python analise.py
+        python analise_detalhada.py
       env:
         DB_USER: ${{ secrets.DB_USER }}
         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
@@ -61,3 +62,12 @@ jobs:
         git push
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Upload files via FTP
+      uses: sebastianpopp/ftp-action@v1.2.0
+      with:
+        host: ${{ secrets.FTP_HOST }}
+        user: ${{ secrets.FTP_USER }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        localDir: '.'  # Diretório local que você quer enviar
+        remoteDir: '/www/'  # Diretório remoto no servidor FTP
